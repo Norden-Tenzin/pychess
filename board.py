@@ -1,36 +1,37 @@
 
 import pygame
-pygame.init()
 
-## board color 
 white, black = (255, 255, 255), (0, 0, 0)
 
-## making a screen resolution
-screen = pygame.display.set_mode([400, 400])
-## setting screen color
-screen.fill((255, 255, 255))
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode([400, 400])
+    screen.fill((255, 255, 255))
 
-## size of each cell
-cellSize = 50
-board = pygame.Surface((cellSize * 8, cellSize * 8))
-board.fill((white))
+    running = True
+    board = drawBoard()
 
-for y in range(0, 8, 2):
-    print("y: ---->", y)
-    for fb in range(0, 8, 2):
-        print("fb: ", fb)
-        pygame.draw.rect(board, black, (y*cellSize, fb*cellSize, cellSize, cellSize))
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        screen.blit(board, board.get_rect())
+        pygame.display.flip()
 
-    for fw in range(1, 9, 2):
-        print("fw: -->", fw)
-        pygame.draw.rect(board, black, ((y+1)*cellSize, fw*cellSize, cellSize, cellSize))
+    pygame.quit()
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+def drawBoard():
+    cellSize = 50
+    board = pygame.Surface((cellSize * 8, cellSize * 8))
+    board.fill((white))
 
-    screen.blit(board, board.get_rect())
-    pygame.display.flip()
-pygame.quit()
+    for y in range(0, 8, 2):
+        for fb in range(0, 8, 2):
+            pygame.draw.rect(board, black, (y*cellSize, fb*cellSize, cellSize, cellSize))
+
+        for fw in range(1, 9, 2):
+            pygame.draw.rect(board, black, ((y+1)*cellSize, fw*cellSize, cellSize, cellSize))
+    return board
+
+if __name__=="__main__": 
+    main() 
