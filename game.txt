@@ -1,0 +1,7 @@
+# this holds the text value for the board which gets translated to the board
+
+p p p p p p p p p p p p 
+p p p p p p p p p p p p 
+p p p p p p p p p p p p 
+p p p p p p p p p p p p 
+

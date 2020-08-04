@@ -1,37 +1,48 @@
-
 import pygame
+import sys
+from constants import *
 
-white, black = (255, 255, 255), (0, 0, 0)
+
+def readGame():
+    with open(GAMEFILE, 'r') as f:
+        game_map = f.readlines()
+    print(game_map)
+
 
 def main():
     pygame.init()
-    screen = pygame.display.set_mode([400, 400])
-    screen.fill((255, 255, 255))
+    screen = pygame.display.set_mode(SIZE)
+    screen.fill(WHITE)
 
-    running = True
     board = drawBoard()
+    readGame()
 
-    while running:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    sys.exit()
+
         screen.blit(board, board.get_rect())
         pygame.display.flip()
 
-    pygame.quit()
 
 def drawBoard():
-    cellSize = 50
-    board = pygame.Surface((cellSize * 8, cellSize * 8))
-    board.fill((white))
+    board = pygame.Surface((CELLSIZE * 8, CELLSIZE * 8))
+    board.fill((WHITE))
 
     for y in range(0, 8, 2):
         for fb in range(0, 8, 2):
-            pygame.draw.rect(board, black, (y*cellSize, fb*cellSize, cellSize, cellSize))
+            pygame.draw.rect(board, BLACK, (y*CELLSIZE, fb *
+                                            CELLSIZE, CELLSIZE, CELLSIZE))
 
         for fw in range(1, 9, 2):
-            pygame.draw.rect(board, black, ((y+1)*cellSize, fw*cellSize, cellSize, cellSize))
+            pygame.draw.rect(board, BLACK, ((y+1)*CELLSIZE,
+                                            fw*CELLSIZE, CELLSIZE, CELLSIZE))
     return board
 
-if __name__=="__main__": 
-    main() 
+
+if __name__ == "__main__":
+    main()
