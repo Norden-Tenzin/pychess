@@ -6,6 +6,7 @@ from constants import *
 def readGame():
     with open(GAMEFILE, 'r') as f:
         game_map = f.readlines()
+    game_map = [line.strip() for line in game_map]
     print(game_map)
 
 
