@@ -1,12 +1,11 @@
 import string
 
 TEXT = "game.txt"
-
 alphabetsoup = list(map(chr, range(97, 105)))
 print(alphabetsoup)
 
 
-def listRev():
+def main():
     oneList = ""
     oneBoard = []
 
@@ -16,14 +15,9 @@ def listRev():
         oneBoard.append(oneList + "\n")
         oneList = ""
     print(oneBoard)
-    return oneBoard
-
-
-def main():
-    output = listRev()
 
     file = open(TEXT, "w+")
-    file.writelines(output)
+    file.writelines(oneBoard)
 
 
 if __name__ == "__main__":
