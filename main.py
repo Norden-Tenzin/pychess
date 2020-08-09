@@ -43,15 +43,13 @@ def drawBoard():
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
     return board
 
-
-def drawPieces(screen, game_tiles):  # 3
+def mapToArr(game_map):
     arr2d = []
     one_line = []
     one_tile = ""
-    letterHolder = ""
 
     # turns the text into a 2d arr
-    for i, tile in enumerate(game_tiles):
+    for i, tile in enumerate(game_map):
         for j, tile_content in enumerate(tile):
             one_tile = one_tile + tile_content
             if(tile_content == ")"):
@@ -59,7 +57,12 @@ def drawPieces(screen, game_tiles):  # 3
                 one_tile = ""
         arr2d.insert(i, one_line)
         one_line = []
-        
+    return arr2d
+
+def drawPieces(screen, game_map):  # 3
+    arr2d = mapToArr(game_map)
+    letterHolder = ""
+
     # having letters for location might have been a mistake
     # i - board x axis index, j - board y axis index
 
@@ -108,6 +111,11 @@ def drawPieces(screen, game_tiles):  # 3
                     k = k + 2
             letterHolder = ""
 
+def movePiece(game_map):
+    arr2d = mapToArr(game_map)
+    # print(start, end)
+    ## start and end like e2 to e4
+
 
 def readGame():
     with open(GAMEFILE, 'r') as f:
@@ -126,6 +134,7 @@ def gameLoop(screen, game_map):
                     sys.exit()
         drawPieces(screen, game_map)  # 2
         pygame.display.update()
+        # movePiece(game_map)
 
 
 def main():
