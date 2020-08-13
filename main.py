@@ -3,6 +3,7 @@
 import pygame
 import sys
 from constants import *
+from chessmen import *
 from array import *
 
 # loading images
@@ -84,10 +85,7 @@ def drawPieces(screen, game_map):  # 3
                         else:
                             screen.blit(b_bishop, ((j)*CELLSIZE, (i)*CELLSIZE))
                     elif(letterHolder.lower() == "ki"):
-                        if(letterHolder.islower()):
-                            screen.blit(w_king, ((j)*CELLSIZE, (i)*CELLSIZE))
-                        else:
-                            screen.blit(b_king, ((j)*CELLSIZE, (i)*CELLSIZE))
+                        King(letterHolder,)
                     elif(letterHolder.lower() == "kn"):
                         if(letterHolder.islower()):
                             screen.blit(w_knight, ((j)*CELLSIZE, (i)*CELLSIZE))
