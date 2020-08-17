@@ -1,8 +1,12 @@
 import string
+import numpy as np
+from constants import *
 
-TEXT = "game.txt"
 alphabetsoup = list(map(chr, range(97, 105)))
-print(alphabetsoup)
+blackpieces = ["Ro", "Kn", "Bi", "Qu", "Ki", "Bi", "Kn",
+               "Ro", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa"]
+whitepieces = ["pa", "pa", "pa", "pa", "pa", "pa", "pa",
+               "pa", "ro", "kn", "bi", "qu", "ki", "bi", "kn", "ro"]
 
 
 def main():
@@ -10,13 +14,26 @@ def main():
     oneBoard = []
 
     for x in range(8, 0, -1):
-        for y in alphabetsoup:
-            oneList = (oneList + "("+y+str(x)+"-)")
+        for i, y in enumerate(alphabetsoup):
+            print(x, y)
+            if x == 8:
+                oneList = (oneList + y + str(x) + "-" +
+                           str(blackpieces[i]) + ",")
+            elif x == 7:
+                oneList = (oneList + y + str(x) + "-" +
+                           str(blackpieces[i+8]) + ",")
+            elif x == 2:
+                oneList = (oneList + y + str(x) + "-" +
+                           str(whitepieces[i]) + ",")
+            elif x == 1:
+                oneList = (oneList + y + str(x) + "-" +
+                           str(whitepieces[i+8]) + ",")
+            else:
+                oneList = (oneList + y + str(x) + "-##,")
         oneBoard.append(oneList + "\n")
         oneList = ""
-    print(oneBoard)
-
-    file = open(TEXT, "w+")
+    print(np.matrix(oneBoard))
+    file = open(GAMEFILE, "w+")
     file.writelines(oneBoard)
 
 
