@@ -1,15 +1,7 @@
-# comments are just there for me to understand whats going on
-
-import pygame
-import sys
-import math
-import numpy as np
-from constants import *
 from chessmen import *
-from array import *
-
-# loading images
-# black
+from boardmaker import init as boardinit
+## loading images
+# Black
 b_bishop = pygame.image.load(B_BISHOP)
 b_king = pygame.image.load(B_KING)
 b_knight = pygame.image.load(B_KNIGHT)
@@ -17,7 +9,7 @@ b_pawn = pygame.image.load(B_PAWN)
 b_queen = pygame.image.load(B_QUEEN)
 b_rook = pygame.image.load(B_ROOK)
 
-# white
+# White
 w_bishop = pygame.image.load(W_BISHOP)
 w_king = pygame.image.load(W_KING)
 w_knight = pygame.image.load(W_KNIGHT)
@@ -25,8 +17,7 @@ w_pawn = pygame.image.load(W_PAWN)
 w_queen = pygame.image.load(W_QUEEN)
 w_rook = pygame.image.load(W_ROOK)
 
-# variables
-done = False
+# Sprite Groups
 whitepieces = pygame.sprite.Group()
 blackpieces = pygame.sprite.Group()
 boardpieces = pygame.sprite.Group()
@@ -51,40 +42,12 @@ def drawBoard():
             pygame.draw.rect(board, WHITE, ((y+1)*CELLSIZE,
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
-     # TODO to add text inside the game on the sides
+    # # TODO to add text inside the game on the sides
     # pygame.font.init()
     # myfont = pygame.font.SysFont('Comic Sans Ms', 30)
     # textSurface = myfont.render("Something", False, BLACK)
     # board.blit(textSurface,(0,0))
     return board
-
-
-def readGame():  # turns the text into a 2d arr
-    maparr = []
-    one_line = []
-    one_tile = ""
-    with open(GAMEFILE, 'r') as f:
-        game_map = f.readlines()
-    game_map = [line.strip() for line in game_map]
-
-    for i, tile in enumerate(game_map):
-        for j, tile_content in enumerate(tile):
-            one_tile = one_tile + tile_content
-            if(tile_content == ","):
-                one_tile = one_tile.replace(',', "")
-                one_line.append(one_tile)
-                one_tile = ""
-        maparr.insert(i, one_line)
-        one_line = []
-    # print(np.matrix(maparr))
-    return maparr
-
-
-def writeGame(Chessmen):
-    maparr = readGame()
-
-    # file = open(GAMEFILE, "w+")
-    # file.writelines(map2d)
 
 
 def drawPieces(screen):  # 3
@@ -178,12 +141,13 @@ def gameLoop(screen):
                 selected[0].rect.y = (math.floor(posy)) - 25
         board = drawBoard()
         screen.blit(board, board.get_rect())
-        whitepieces.draw(screen)
         blackpieces.draw(screen)
+        whitepieces.draw(screen)
         pygame.display.flip()
 
 
 def main():
+    boardinit()
     screen = initialize()
     board = drawBoard()
     screen.blit(board, board.get_rect())

@@ -9,13 +9,11 @@ whitepieces = ["pa", "pa", "pa", "pa", "pa", "pa", "pa",
                "pa", "ro", "kn", "bi", "qu", "ki", "bi", "kn", "ro"]
 
 
-def main():
+def init():
     oneList = ""
     oneBoard = []
-
     for x in range(8, 0, -1):
         for i, y in enumerate(alphabetsoup):
-            print(x, y)
             if x == 8:
                 oneList = (oneList + y + str(x) + "-" +
                            str(blackpieces[i]) + ",")
@@ -32,10 +30,10 @@ def main():
                 oneList = (oneList + y + str(x) + "-##,")
         oneBoard.append(oneList + "\n")
         oneList = ""
-    print(np.matrix(oneBoard))
+    # print(np.matrix(oneBoard))
     file = open(GAMEFILE, "w+")
     file.writelines(oneBoard)
 
 
 if __name__ == "__main__":
-    main()
+    init()
