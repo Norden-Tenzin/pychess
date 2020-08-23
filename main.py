@@ -1,6 +1,6 @@
 from chessmen import *
 from boardmaker import init as boardinit
-## loading images
+# loading images
 # Black
 b_bishop = pygame.image.load(B_BISHOP)
 b_king = pygame.image.load(B_KING)
@@ -42,7 +42,6 @@ def drawBoard():
             pygame.draw.rect(board, WHITE, ((y+1)*CELLSIZE,
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
-    # # TODO to add text inside the game on the sides
     pygame.font.init()
     numbs = ["8", "7", "6", "5", "4", "3", "2", "1"]
     alpha = ["a", "b", "c", "d", "e", "f", "g", "h"]
@@ -52,10 +51,10 @@ def drawBoard():
     myfont = pygame.font.SysFont('arial', 15)
     for i in range(0, 8):
         textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
-        board.blit(textSurface,(2,CELLSIZE * i))
+        board.blit(textSurface, (2, CELLSIZE * i))
     for i in range(0, 8):
         textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
-        board.blit(textSurface,((CELLSIZE * i) + CELLSIZE-10, 380))
+        board.blit(textSurface, ((CELLSIZE * i) + CELLSIZE-10, 380))
     return board
 
 
@@ -88,10 +87,10 @@ def drawPieces(screen):  # 3
             elif(tile.split("-")[1].lower() == "pa"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Pawn(tile.split("-")[1],tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Pawn(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Pawn(tile.split("-")[1],tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Pawn(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "qu"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
@@ -134,9 +133,11 @@ def gameLoop(screen):
                 if selected:
                     movekind = selected[0].move(posx, posy)
                     if selected[0].name.strip()[0].islower() and movekind == 1:
-                        collision_list = pygame.sprite.spritecollide(selected[0], blackpieces, True)
+                        collision_list = pygame.sprite.spritecollide(
+                            selected[0], blackpieces, True)
                     elif selected[0].name.strip()[0].isupper() and movekind == 1:
-                        collision_list = pygame.sprite.spritecollide(selected[0], whitepieces, True)
+                        collision_list = pygame.sprite.spritecollide(
+                            selected[0], whitepieces, True)
                     selected = []
 
         for chesspiece in boardpieces:
