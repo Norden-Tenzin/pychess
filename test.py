@@ -1,5 +1,6 @@
-x = "a1-KI"
-# print(x.split("-")[0])
-# print(x.split("-")[1])
+from helperfunctions import *
 
-print((x.split("-"))[1].strip()[0])
+pos = locationToPos("e4")
+print(pos)
+location = posToLocation([3,6])
+# print(location)

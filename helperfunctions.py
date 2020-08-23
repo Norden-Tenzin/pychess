@@ -12,6 +12,7 @@ def readGame():  # turns the text into a 2d arr
     maparr = []
     one_line = []
     one_tile = ""
+
     with open(GAMEFILE, 'r') as f:
         game_map = f.readlines()
     game_map = [line.strip() for line in game_map]
@@ -33,23 +34,41 @@ def writeGame(Chessmen, posx, posy): # turns 2d arr to text
     maparr = readGame()
     game_map = []
     one_line = ""
-
     locationholder = ""
     output = ""
     empty = "##"
 
     for i, line in enumerate(maparr):
         for j, tile in enumerate(line):
-            if tile.split("-")[1] == Chessmen.name:
+            if tile.split("-")[0] == Chessmen.location and tile.split("-")[1] == Chessmen.name:
                 maparr[i][j] = maparr[i][j].split("-")[0] + "-" + empty
                 maparr[math.floor(posy/50)][math.floor(posx/50)] = maparr[math.floor(
                     posy/50)][math.floor(posx/50)].split("-")[0] + "-" + Chessmen.name
+
     for line in maparr:
         for tile in line:
             one_line = one_line + tile + ","
         game_map.append(one_line + "\n")
         one_line = ""
-
     # print(np.matrix(game_map))
     file = open(GAMEFILE, "w+")
     file.writelines(game_map)
+
+def locationToPos(location):
+    xval = 0
+    yval = 0
+    # e,2 = 4,6
+    for i, letter in enumerate(['a','b','c','d','e','f','g','h']):
+        if letter == location.strip()[0]:
+            xval = i
+            
+    for j, numb in enumerate([8,7,6,5,4,3,2,1]):
+        if numb == int(location.strip()[1]):
+            yval = j
+    return [xval,yval]
+    
+def posToLocation(location):
+    letters = ['a','b','c','d','e','f','g','h']
+    numbs = [8,7,6,5,4,3,2,1]
+    final = letters[location[0]] + str(numbs[location[1]])
+    return final

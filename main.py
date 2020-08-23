@@ -43,10 +43,19 @@ def drawBoard():
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
     # # TODO to add text inside the game on the sides
-    # pygame.font.init()
-    # myfont = pygame.font.SysFont('Comic Sans Ms', 30)
-    # textSurface = myfont.render("Something", False, BLACK)
-    # board.blit(textSurface,(0,0))
+    pygame.font.init()
+    numbs = ["8", "7", "6", "5", "4", "3", "2", "1"]
+    alpha = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    colornumbs = [DARK, WHITE]
+    coloralpha = [WHITE, DARK]
+
+    myfont = pygame.font.SysFont('arial', 15)
+    for i in range(0, 8):
+        textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
+        board.blit(textSurface,(2,CELLSIZE * i))
+    for i in range(0, 8):
+        textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
+        board.blit(textSurface,((CELLSIZE * i) + CELLSIZE-10, 380))
     return board
 
 
@@ -58,50 +67,47 @@ def drawPieces(screen):  # 3
             if(tile.split("-")[1].lower() == "bi"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Bishop(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Bishop(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Bishop(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Bishop(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "ki"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        King(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        King(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        King(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        King(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "kn"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Knight(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Knight(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Knight(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Knight(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "pa"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Pawn(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Pawn(tile.split("-")[1],tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Pawn(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Pawn(tile.split("-")[1],tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "qu"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Queen(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Queen(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
-                    print("here")
                     blackpieces.add(
-                        Queen(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Queen(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "ro"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Rook(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Rook(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Rook(tile.split("-")[1], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Rook(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
     boardpieces.add(whitepieces)
     boardpieces.add(blackpieces)
-    print(whitepieces)
-    print(blackpieces)
 
 
 def gameLoop(screen):
@@ -127,12 +133,12 @@ def gameLoop(screen):
                     chesspiece.clicked = False
                 if selected:
                     movekind = selected[0].move(posx, posy)
-                    if movekind == 1:
-                        collision_list = pygame.sprite.spritecollide(
-                            selected[0], blackpieces, True)
+                    if selected[0].name.strip()[0].islower() and movekind == 1:
+                        collision_list = pygame.sprite.spritecollide(selected[0], blackpieces, True)
+                    elif selected[0].name.strip()[0].isupper() and movekind == 1:
+                        collision_list = pygame.sprite.spritecollide(selected[0], whitepieces, True)
                     selected = []
 
-                drag_id = 0
         for chesspiece in boardpieces:
             if chesspiece.clicked == True:
                 selected = [chesspiece]
