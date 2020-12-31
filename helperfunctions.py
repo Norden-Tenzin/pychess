@@ -6,6 +6,7 @@ import math
 import numpy as np
 from constants import *
 
+
 # holds all the main imports
 # helper funcs
 def readGame():  # turns the text into a 2d arr
@@ -30,7 +31,7 @@ def readGame():  # turns the text into a 2d arr
     return maparr
 
 
-def writeGame(Chessmen, posx, posy): # turns 2d arr to text
+def writeGame(Chessmen, posx, posy):  # turns 2d arr to text
     maparr = readGame()
     game_map = []
     one_line = ""
@@ -54,21 +55,23 @@ def writeGame(Chessmen, posx, posy): # turns 2d arr to text
     file = open(GAMEFILE, "w+")
     file.writelines(game_map)
 
+
 def locationToPos(location):
     xval = 0
     yval = 0
     # e,2 = 4,6
-    for i, letter in enumerate(['a','b','c','d','e','f','g','h']):
+    for i, letter in enumerate(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']):
         if letter == location.strip()[0]:
             xval = i
-            
-    for j, numb in enumerate([8,7,6,5,4,3,2,1]):
+
+    for j, numb in enumerate([8, 7, 6, 5, 4, 3, 2, 1]):
         if numb == int(location.strip()[1]):
             yval = j
-    return [xval,yval]
-    
+    return [xval, yval]
+
+
 def posToLocation(location):
-    letters = ['a','b','c','d','e','f','g','h']
-    numbs = [8,7,6,5,4,3,2,1]
+    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    numbs = [8, 7, 6, 5, 4, 3, 2, 1]
     final = letters[location[0]] + str(numbs[location[1]])
     return final
