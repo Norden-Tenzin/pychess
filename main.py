@@ -4,7 +4,8 @@ import makeimagesmaller
 import constants
 
 # loading images
-# Black
+
+# Black pieces 
 b_bishop = pygame.image.load(B_BISHOP)
 b_king = pygame.image.load(B_KING)
 b_knight = pygame.image.load(B_KNIGHT)
@@ -12,7 +13,7 @@ b_pawn = pygame.image.load(B_PAWN)
 b_queen = pygame.image.load(B_QUEEN)
 b_rook = pygame.image.load(B_ROOK)
 
-# White
+# White pieces
 w_bishop = pygame.image.load(W_BISHOP)
 w_king = pygame.image.load(W_KING)
 w_knight = pygame.image.load(W_KNIGHT)

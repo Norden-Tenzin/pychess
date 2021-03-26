@@ -1,8 +1,7 @@
 from helperfunctions import *
 
+
 # this will hold the classes of the chess pieces
-
-
 class Chessmen(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
