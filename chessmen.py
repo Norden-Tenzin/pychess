@@ -73,7 +73,6 @@ class King(Chessmen):
                         self.rect.y = i*50
             return -1
 
-
 class Queen(Chessmen):
     def __init__(self, name, location, xpos, ypos):
         super().__init__()

@@ -1,5 +1,8 @@
 from chessmen import *
 from boardmaker import init as boardinit
+import makeimagesmaller
+import constants
+
 # loading images
 # Black
 b_bishop = pygame.image.load(B_BISHOP)
@@ -22,41 +25,36 @@ whitepieces = pygame.sprite.Group()
 blackpieces = pygame.sprite.Group()
 boardpieces = pygame.sprite.Group()
 
-
 def initialize():
     pygame.init()
-    screen = pygame.display.set_mode(SIZE)
+    screen = pygame.display.set_mode((SIZE, SIZE))
     pygame.display.set_caption("Multiplayer Chess")
     return screen
 
-
-def drawBoard():
-    board = pygame.Surface((CELLSIZE * 8, CELLSIZE * 8))
-    board.fill((DARK))
+def drawBoard(screen):
+    screen.fill((DARKER))
 
     for y in range(0, 8, 2):
         for fb in range(0, 8, 2):
-            pygame.draw.rect(board, WHITE, (y*CELLSIZE, fb *
+            pygame.draw.rect(screen, WHITE, (y*CELLSIZE, fb *
                                             CELLSIZE, CELLSIZE, CELLSIZE))
         for fw in range(1, 9, 2):
-            pygame.draw.rect(board, WHITE, ((y+1)*CELLSIZE,
+            pygame.draw.rect(screen, WHITE, ((y+1)*CELLSIZE,
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
     pygame.font.init()
     numbs = ["8", "7", "6", "5", "4", "3", "2", "1"]
     alpha = ["a", "b", "c", "d", "e", "f", "g", "h"]
-    colornumbs = [DARK, WHITE]
-    coloralpha = [WHITE, DARK]
+    colornumbs = [DARKER, WHITE]
+    coloralpha = [WHITE, DARKER]
 
-    myfont = pygame.font.SysFont('arial', 15)
+    myfont = pygame.font.SysFont('arialblack', 15)
     for i in range(0, 8):
         textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
-        board.blit(textSurface, (2, CELLSIZE * i))
+        screen.blit(textSurface, (2, CELLSIZE * i))
     for i in range(0, 8):
         textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
-        board.blit(textSurface, ((CELLSIZE * i) + CELLSIZE-10, 380))
-    return board
-
+        screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.20), SIZE - (CELLSIZE*.30)))
 
 def drawPieces(screen):  # 3
     maparr = readGame()
@@ -108,7 +106,6 @@ def drawPieces(screen):  # 3
     boardpieces.add(whitepieces)
     boardpieces.add(blackpieces)
 
-
 def gameLoop(screen):
     selected = []
     while True:
@@ -146,21 +143,17 @@ def gameLoop(screen):
             if selected:
                 selected[0].rect.x = (math.floor(posx)) - 25
                 selected[0].rect.y = (math.floor(posy)) - 25
-        board = drawBoard()
-        screen.blit(board, board.get_rect())
+        drawBoard(screen)
         blackpieces.draw(screen)
         whitepieces.draw(screen)
         pygame.display.flip()
 
-
 def main():
     boardinit()
     screen = initialize()
-    board = drawBoard()
-    screen.blit(board, board.get_rect())
+    drawBoard(screen)
     drawPieces(screen)
     gameLoop(screen)
-
 
 if __name__ == "__main__":
     main()

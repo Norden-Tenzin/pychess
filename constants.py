@@ -2,9 +2,21 @@
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 DARK = (125, 135, 150)
+# colors
+
+LIGHTDARK = (156, 169, 189)
+DARKER = (90, 98, 111)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+ORANGE = (255,99,71)
+LIGHTORANGE = (255, 157, 143)
+YELLOW  = (255,255,0)
+
+
 # Sizes
-SIZE = (400, 400)  # screen size
-CELLSIZE = 50
+UISPACE = 400
+SIZE = 700  # screen size
+CELLSIZE = SIZE/8
 
 # file add
 GAMEFILE = "game.txt"

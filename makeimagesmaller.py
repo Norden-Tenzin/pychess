@@ -14,7 +14,7 @@ w_diff = (width/6)
 h_diff = (height/2)
 
 image = Image.open("./assets/pieces.png")
-resizeSize = (int(SIZE[0]/8),int(SIZE[1]/8))
+resizeSize = (int(SIZE/8),int(SIZE/8))
 print(resizeSize)
 
 # white
