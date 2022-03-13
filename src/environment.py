@@ -1,8 +1,7 @@
 from chessmen import *
-from boardmaker import init as boardinit
-import makeimagesmaller
+import image_resizer
 import constants
-
+from board_maker import board_arr_maker
 # loading images
 
 # Black pieces 
@@ -34,7 +33,6 @@ def initialize():
 
 def drawBoard(screen):
     screen.fill((DARKER))
-
     for y in range(0, 8, 2):
         for fb in range(0, 8, 2):
             pygame.draw.rect(screen, WHITE, (y*CELLSIZE, fb *
@@ -55,10 +53,10 @@ def drawBoard(screen):
         screen.blit(textSurface, (2, CELLSIZE * i))
     for i in range(0, 8):
         textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
-        screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.20), SIZE - (CELLSIZE*.30)))
+        screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
 
-def drawPieces(screen):  # 3
-    maparr = readGame()
+def drawPieces(screen, board):  # 3
+    maparr = board
     letterHolder = ""
     for i, line in enumerate(maparr):
         for j, tile in enumerate(line):
@@ -107,7 +105,9 @@ def drawPieces(screen):  # 3
     boardpieces.add(whitepieces)
     boardpieces.add(blackpieces)
 
-def gameLoop(screen):
+# seperate the gameloop with rendering the board
+def gameLoop(screen, maparr):
+    game_map_arr = maparr
     selected = []
     while True:
         posx, posy = pygame.mouse.get_pos()
@@ -129,13 +129,11 @@ def gameLoop(screen):
                 for chesspiece in boardpieces:
                     chesspiece.clicked = False
                 if selected:
-                    movekind = selected[0].move(posx, posy)
+                    movekind, game_map_arr = selected[0].move(posx, posy, game_map_arr)
                     if selected[0].name.strip()[0].islower() and movekind == 1:
-                        collision_list = pygame.sprite.spritecollide(
-                            selected[0], blackpieces, True)
+                        collision_list = pygame.sprite.spritecollide(selected[0], blackpieces, True)
                     elif selected[0].name.strip()[0].isupper() and movekind == 1:
-                        collision_list = pygame.sprite.spritecollide(
-                            selected[0], whitepieces, True)
+                        collision_list = pygame.sprite.spritecollide(selected[0], whitepieces, True)
                     selected = []
 
         for chesspiece in boardpieces:
@@ -148,13 +146,3 @@ def gameLoop(screen):
         blackpieces.draw(screen)
         whitepieces.draw(screen)
         pygame.display.flip()
-
-def main():
-    boardinit()
-    screen = initialize()
-    drawBoard(screen)
-    drawPieces(screen)
-    gameLoop(screen)
-
-if __name__ == "__main__":
-    main()

@@ -1,11 +1,9 @@
-from helperfunctions import *
-
+from helper_functions import *
 
 # this will hold the classes of the chess pieces
 class Chessmen(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-
 
 # king queen bishop knight rook pawn
 class King(Chessmen):
@@ -22,8 +20,8 @@ class King(Chessmen):
         self.rect.x = xpos
         self.rect.y = ypos
 
-    def moveset(self, posx, posy):
-        maparr = readGame()
+    def moveset(self, posx, posy, maparr):
+        # maparr = readGame()
         for i, line in enumerate(maparr):
             for j, tile in enumerate(line):
                 if tile.split("-")[1] == self.name:
@@ -32,62 +30,64 @@ class King(Chessmen):
                     else:
                         return False
 
-    def possiblemoves(self, posx, posy):
-        maparr = readGame()
-        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.moveset(posx, posy):
+    def possiblemoves(self, posx, posy, maparr):
+        # maparr = readGame()
+        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.moveset(posx, posy, maparr):
             return True
         else:
             return False
 
-    def enemydetect(self, posx, posy):  # if the enemy is on that pos
-        maparr = readGame()
+    def enemydetect(self, posx, posy, maparr):  # if the enemy is on that pos
         if self.name.strip()[0].islower():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.moveset(posx, posy):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.moveset(posx, posy, maparr):
                 return True
             else:
                 return False
         elif self.name.strip()[0].isupper():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.moveset(posx, posy):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.moveset(posx, posy, maparr):
                 return True
             else:
                 return False
 
-    def move(self, posx, posy):
-        maparr = readGame()
-        if self.possiblemoves(posx, posy):
-            writeGame(self, posx, posy)
+    def move(self, posx, posy, maparr):
+        pos = locationToPos(self.location)
+        if self.possiblemoves(posx, posy, maparr):
+            maparr = writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
-            return 0
-        elif self.enemydetect(posx, posy):
-            writeGame(self, posx, posy)
+            pos[0] = math.floor(posx/50)
+            pos[1] = math.floor(posy/50)
+            newlocation = posToLocation(pos)
+            self.location = newlocation
+            return (0, maparr)
+        elif self.enemydetect(posx, posy, maparr):
+            maparr = writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
-            return 1
+            pos = [math.floor(posx/50), math.floor(posy/50)]
+            newlocation = posToLocation(pos)
+            self.location = newlocation
+            return (1, maparr)
         else:
-            for i, line in enumerate(maparr):
-                for j, tile in enumerate(line):
-                    if tile.split("-")[1] == self.name:
-                        self.rect.x = j*50
-                        self.rect.y = i*50
-            return -1
+            self.rect.x = pos[0] * 50
+            self.rect.y = pos[1] * 50
+            return (-1, maparr)
 
 class Queen(Chessmen):
     def __init__(self, name, location, xpos, ypos):
         super().__init__()
+        self.clicked = False
         self.name = name
         self.location = location
         if(self.name.islower()):
             self.image = pygame.image.load(W_QUEEN)
         else:
             self.image = pygame.image.load(B_QUEEN)
-        self.clicked = False
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
 
-    def moveset(self, posx, posy):
-        maparr = readGame()
+    def moveset(self, posx, posy, maparr):
         pos = locationToPos(self.location)
         xoffset = abs(math.floor(posx/50) - pos[0])
         yoffset = abs(math.floor(posy/50) - pos[1])
@@ -101,71 +101,73 @@ class Queen(Chessmen):
         else:
             return False
 
-    def possiblemoves(self, posx, posy):
-        maparr = readGame()
-        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.moveset(posx, posy):
+    def possiblemoves(self, posx, posy, maparr):
+        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.moveset(posx, posy, maparr):
             return True
         else:
             return False
 
-    def enemydetect(self, posx, posy):
-        maparr = readGame()
-        pos = locationToPos(self.location)
+    def enemydetect(self, posx, posy, maparr):
+        # pos = locationToPos(self.location)
         if self.name.strip()[0].islower():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.moveset(posx, posy):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.moveset(posx, posy, maparr):
                 return True
             else:
                 return False
         elif self.name.strip()[0].isupper():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.moveset(posx, posy):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.moveset(posx, posy, maparr):
                 return True
             else:
                 return False
 
-    def move(self, posx, posy):
-        maparr = readGame()
-        location = locationToPos(self.location)
-        newlocation = ""
-
-        if self.possiblemoves(posx, posy):
-            writeGame(self, posx, posy)
+    def move(self, posx, posy, maparr):
+        pos = locationToPos(self.location)
+        if self.possiblemoves(posx, posy, maparr):
+            writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
-            location[0] = math.floor(posx/50)
-            location[1] = math.floor(posy/50)
-            newlocation = posToLocation(location)
+            pos[0] = math.floor(posx/50)
+            pos[1] = math.floor(posy/50)
+            newlocation = posToLocation(pos)
             self.location = newlocation
-            return 0
-        elif self.enemydetect(posx, posy):
-            writeGame(self, posx, posy)
+            return (0, maparr)
+        elif self.enemydetect(posx, posy, maparr):
+            writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
-            location = [math.floor(posx/50), math.floor(posy/50)]
-            newlocation = posToLocation(location)
+            pos = [math.floor(posx/50), math.floor(posy/50)]
+            newlocation = posToLocation(pos)
             self.location = newlocation
-            return 1
+            return (1, maparr)
         else:
-            self.rect.x = location[0] * 50
-            self.rect.y = location[1] * 50
-            return -1
-
+            self.rect.x = pos[0] * 50
+            self.rect.y = pos[1] * 50
+            return (-1, maparr)
 
 class Bishop(Chessmen):
     def __init__(self, name, location, xpos, ypos):
         super().__init__()
+        self.clicked = False
         self.name = name
         self.location = location
         if(self.name.islower()):
             self.image = pygame.image.load(W_BISHOP)
         else:
             self.image = pygame.image.load(B_BISHOP)
-        self.clicked = False
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
 
+    def clearpath(self, posx, posy, maparr):
+        print(maparr[math.floor(posy/50)][math.floor(posx/50)].find("##"))
+        pos = locationToPos(self.location)
+        xoffset = abs(math.floor(posx/50) - pos[0])
+        yoffset = abs(math.floor(posy/50) - pos[1])
+        print(pos[0], pos[1])
+        print(math.floor(posx/50), math.floor(posy/50))
+        print(xoffset, yoffset)
+
     def moveset(self, posx, posy):
-        maparr = readGame()
         pos = locationToPos(self.location)
         xoffset = abs(math.floor(posx/50) - pos[0])
         yoffset = abs(math.floor(posy/50) - pos[1])
@@ -174,54 +176,51 @@ class Bishop(Chessmen):
         else:
             return False
 
-    def possiblemoves(self, posx, posy):
-        maparr = readGame()
+    def possiblemoves(self, posx, posy, maparr):
         if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.moveset(posx, posy):
+            self.clearpath(posx, posy, maparr)
             return True
         else:
             return False
 
-    def enemydetect(self, posx, posy):
-        maparr = readGame()
+    def enemydetect(self, posx, posy, maparr):
         pos = locationToPos(self.location)
         if self.name.strip()[0].islower():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.moveset(posx, posy):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.moveset(posx, posy, maparr):
                 return True
             else:
                 return False
         elif self.name.strip()[0].isupper():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.moveset(posx, posy):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.moveset(posx, posy, maparr):
                 return True
             else:
                 return False
 
-    def move(self, posx, posy):
-        maparr = readGame()
-        location = locationToPos(self.location)
+    def move(self, posx, posy, maparr):
+        pos = locationToPos(self.location)
         newlocation = ""
 
-        if self.possiblemoves(posx, posy):
-            writeGame(self, posx, posy)
+        if self.possiblemoves(posx, posy, maparr):
+            writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
-            location[0] = math.floor(posx/50)
-            location[1] = math.floor(posy/50)
-            newlocation = posToLocation(location)
+            pos[0] = math.floor(posx/50)
+            pos[1] = math.floor(posy/50)
+            newlocation = posToLocation(pos)
             self.location = newlocation
-            return 0
-        elif self.enemydetect(posx, posy):
-            writeGame(self, posx, posy)
+            return (0, maparr)
+        elif self.enemydetect(posx, posy, maparr):
+            writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
-            location = [math.floor(posx/50), math.floor(posy/50)]
-            newlocation = posToLocation(location)
+            pos = [math.floor(posx/50), math.floor(posy/50)]
+            newlocation = posToLocation(pos)
             self.location = newlocation
-            return 1
+            return (1, maparr)
         else:
-            self.rect.x = location[0] * 50
-            self.rect.y = location[1] * 50
-            return -1
-
+            self.rect.x = pos[0] * 50
+            self.rect.y = pos[1] * 50
+            return (-1, maparr)
 
 class Knight(Chessmen):
     def __init__(self, name, location, xpos, ypos):
@@ -297,7 +296,6 @@ class Knight(Chessmen):
             self.rect.y = location[1] * 50
             return -1
 
-
 class Rook(Chessmen):
     def __init__(self, name, location, xpos, ypos):
         super().__init__()
@@ -371,7 +369,6 @@ class Rook(Chessmen):
             self.rect.y = location[1] * 50
             return -1
 
-
 class Pawn(Chessmen):
     def __init__(self, name, location, xpos, ypos):
         super().__init__()
@@ -412,7 +409,6 @@ class Pawn(Chessmen):
 
     def possiblemoves(self, posx, posy):
         maparr = readGame()
-
         if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.moveset(posx, posy):
             return True
         else:

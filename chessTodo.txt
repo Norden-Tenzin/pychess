@@ -1,0 +1,33 @@
+- server - is the host
+- client - is the joinee
+
+	- give code to cleint - player 
+	- client uses code to join the server  - code could be ip add and port
+	- client connects - to server
+	- goes to lobby
+		- in lobby we set game settings
+			- such as: 
+				- piece color 
+				- time limit - TODO for now unlimited.
+			- click start to go to game
+				
+	- At start game
+		- set pieces to client and server  - depends on what piece color picked
+		
+	- in game
+		- white goes first.
+			- need to make a blocking function - to stop playeer from moving pieces when they shouldnt be able to.
+		- at every move
+			- if client moves
+				- its gonna send game data to server to change board
+					- lift blocking on server
+					- like move knight from __ to __ - have this in somesort of json or something. 
+					
+					- wont send data for false move tried. only moves that are valid. 
+					- 
+			- if server moves
+				- send data to client to change the board
+					- lift the blocking on client
+					-  i want it to take care of valid invalid moves on the player side.
+					
+	

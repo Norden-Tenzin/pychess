@@ -3,7 +3,8 @@
 - holds all the chess pieces. their size changes depending on the size of the board
 
 # py files
-- main.py - it does what main does
+- main.py 
+- environment - holds the game loop
 - constants.py holds all the constants
 - makeimagessmaller.py crops the pieces out of the image and resizes it to the board (currently set to 400, 400)
 - boardmaker.py intializes the game.txt without any pieces

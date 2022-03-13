@@ -12,10 +12,9 @@ ORANGE = (255,99,71)
 LIGHTORANGE = (255, 157, 143)
 YELLOW  = (255,255,0)
 
-
 # Sizes
 UISPACE = 400
-SIZE = 700  # screen size
+SIZE = 400 # screen size
 CELLSIZE = SIZE/8
 
 # file add
