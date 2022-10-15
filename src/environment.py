@@ -31,7 +31,7 @@ def initialize():
     pygame.display.set_caption("Multiplayer Chess")
     return screen
 
-def drawBoard(screen):
+def draw_board(screen):
     screen.fill((DARKER))
     for y in range(0, 8, 2):
         for fb in range(0, 8, 2):
@@ -41,6 +41,7 @@ def drawBoard(screen):
             pygame.draw.rect(screen, WHITE, ((y+1)*CELLSIZE,
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
+def draw_font(screen):
     pygame.font.init()
     numbs = ["8", "7", "6", "5", "4", "3", "2", "1"]
     alpha = ["a", "b", "c", "d", "e", "f", "g", "h"]
@@ -55,7 +56,19 @@ def drawBoard(screen):
         textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
         screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
 
-def drawPieces(screen, board):  # 3
+def draw_path(screen, path, curr):
+    currx, curry = curr
+    for k, v in path.items():
+        if v['open']:
+            for x, y in v['open']:
+                pygame.draw.rect(screen, GREEN, (CELLSIZE*y, CELLSIZE*x, CELLSIZE, CELLSIZE))
+        if v['hit']:
+            for x, y in v['hit']:
+                pygame.draw.rect(screen, RED, (CELLSIZE*y, CELLSIZE*x, CELLSIZE, CELLSIZE))
+            # pygame.draw.rect(screen, RED, (CELLSIZE*v['hit'][1], CELLSIZE*v['hit'][0], CELLSIZE, CELLSIZE))
+    pygame.draw.rect(screen, ORANGE, (currx, curry, CELLSIZE, CELLSIZE))
+
+def draw_pieces(screen, board):  # 3
     maparr = board
     letterHolder = ""
     for i, line in enumerate(maparr):
@@ -105,10 +118,18 @@ def drawPieces(screen, board):  # 3
     boardpieces.add(whitepieces)
     boardpieces.add(blackpieces)
 
-# seperate the gameloop with rendering the board
-def gameLoop(screen, maparr):
+def write_notation(name, to):
+    pass
+
+# TODO seperate the gameloop with rendering the board
+def game_loop(screen, maparr, playAs):
+    move_mem = []
+    curr_turn = 0
+
     game_map_arr = maparr
     selected = []
+    is_path = False
+
     while True:
         posx, posy = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -117,32 +138,92 @@ def gameLoop(screen, maparr):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    print(move_mem)
                     sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for chesspiece in boardpieces:
                         if chesspiece.rect.collidepoint(posx, posy):
+                            path = None
                             chesspiece.clicked = True
+                            path, curr = chesspiece.clear_paths(posx, posy, playAs, maparr)
+                            is_path = True
 
             if event.type == pygame.MOUSEBUTTONUP:
                 for chesspiece in boardpieces:
                     chesspiece.clicked = False
-                if selected:
-                    movekind, game_map_arr = selected[0].move(posx, posy, game_map_arr)
+                
+                # if a chess piece has been selected 
+                if selected: 
+
+                    print(curr_turn)
+                    move_line = []
+                    # if its the white's turn and the selected piece is also white
+                    if curr_turn == 0 and selected[0].name[0].islower():
+                        old_pos = location_to_pos(selected[0].location)
+                        pos = math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE)
+
+                        movekind, game_map_arr, is_path = selected[0].move(posx, posy, game_map_arr)
+
+                        print(movekind)
+
+                        if movekind > -1:
+                            curr_turn = 1
+                            name = selected[0].name
+
+
+                            move_mem.append("WHITE: NAME: {} FROM: [{},{}] TO: [{},{}]".format(name, old_pos[1], old_pos[0], pos[1], pos[0]))
+
+                            # get new_location
+                            # add move_line
+                        else:
+                            # recenter
+                            oldPos = location_to_pos(selected[0].location)
+                            movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
+                    # if its the black's turn and the selected piece is also black
+                    elif curr_turn == 1 and selected[0].name[0].isupper():
+                        old_pos = location_to_pos(selected[0].location)
+                        pos = math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE)
+
+                        movekind, game_map_arr, is_path = selected[0].move(posx, posy, game_map_arr)
+                        
+                        print(movekind)
+
+                        if movekind > -1:
+                            curr_turn = 0
+                            name = selected[0].name
+                            move_mem.append("BLACK: NAME: {} FROM: [{},{}] TO: [{},{}]".format(name, old_pos[1], old_pos[0], pos[1], pos[0]))
+
+                            # add move_line
+                        else:
+                            # recenter
+                            oldPos = location_to_pos(selected[0].location)
+                            movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
+                    # else not the right turn
+                    else:
+                        oldPos = location_to_pos(selected[0].location)
+                        movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
+
                     if selected[0].name.strip()[0].islower() and movekind == 1:
                         collision_list = pygame.sprite.spritecollide(selected[0], blackpieces, True)
                     elif selected[0].name.strip()[0].isupper() and movekind == 1:
                         collision_list = pygame.sprite.spritecollide(selected[0], whitepieces, True)
                     selected = []
-
+                    
         for chesspiece in boardpieces:
             if chesspiece.clicked == True:
                 selected = [chesspiece]
             if selected:
                 selected[0].rect.x = (math.floor(posx)) - 25
                 selected[0].rect.y = (math.floor(posy)) - 25
-        drawBoard(screen)
+
+        draw_board(screen)
+
+        if is_path:
+            draw_path(screen, path, curr)
+
+        draw_font(screen)
         blackpieces.draw(screen)
         whitepieces.draw(screen)
         pygame.display.flip()

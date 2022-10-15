@@ -15,7 +15,8 @@ YELLOW  = (255,255,0)
 # Sizes
 UISPACE = 400
 SIZE = 400 # screen size
-CELLSIZE = SIZE/8
+CELLSIZE = int(SIZE/8)
+INDEXSIZE = int(SIZE/50)
 
 # file add
 GAMEFILE = "game.txt"

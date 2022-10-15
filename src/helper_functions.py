@@ -42,7 +42,7 @@ def writeGame(Chessmen, posx, posy, maparr):  # turns 2d arr to text
                 maparr[math.floor(posy/50)][math.floor(posx/50)] = maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[0] + "-" + Chessmen.name
     return maparr
 
-def locationToPos(location):
+def location_to_pos(location):
     xval = 0
     yval = 0
     # e,2 = 4,6
@@ -53,10 +53,10 @@ def locationToPos(location):
     for j, numb in enumerate([8, 7, 6, 5, 4, 3, 2, 1]):
         if numb == int(location.strip()[1]):
             yval = j
-    return [xval, yval]
+    return [yval, xval]
 
-def posToLocation(location):
+def pos_to_location(location):
     letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
     numbs = [8, 7, 6, 5, 4, 3, 2, 1]
-    final = letters[location[0]] + str(numbs[location[1]])
+    final = letters[location[1]] + str(numbs[location[0]])
     return final
