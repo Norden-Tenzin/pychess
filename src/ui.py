@@ -2,17 +2,20 @@
 # Setup Python ----------------------------------------------- #
 import pygame, sys
 from helper_functions import *
-from main import *
+from pygame.locals import *
+from constants import *
+# from main import *
 
 # Setup pygame/window ---------------------------------------- #
-mainClock = pygame.time.Clock()
-from pygame.locals import *
+
 pygame.init()
 pygame.display.set_caption('game base')
 screen = pygame.display.set_mode((SIZE, SIZE))
+mainClock = pygame.time.Clock()
 
-font = pygame.font.SysFont(None, 20)
-# print(str(pygame.font.get_fonts()) + "\n")
+font_name = "segoeulblack"
+title = pygame.font.SysFont(font_name, 80, 1)
+text = pygame.font.SysFont(font_name, 40, 1)
 
 fonts = pygame.font.get_fonts()
 click = False
@@ -23,85 +26,86 @@ def draw_text(text, font, color, surface, x, y):
     textrect.topleft = (x, y)
     surface.blit(textobj, textrect)
 
+def draw_button(text, font, color, surface, fontxoffset, fontyoffset, buttonx, buttony, buttonw, buttonh, buttoncolor, buttonfunc, mx, my, click):
+    button_rect = pygame.Rect(buttonx, buttony, buttonw, buttonh)
+    if button_rect.collidepoint((mx, my)):
+        if click:
+            buttonfunc()
+    pygame.draw.rect(screen, buttoncolor, button_rect)
+    draw_text(text, font, color, surface, buttonx + fontxoffset, buttony + fontyoffset)
+
 def main_menu():
     i = 0
+    click = False
     while True:
-        screen.fill((0,0,0))
-
-        draw_text('Chess', pygame.font.SysFont(fonts[i], 40), (255, 255, 255), screen, 20, 20)
-        draw_text(fonts[i], pygame.font.SysFont(None, 20), (255, 255, 255), screen, 20, 70)
-
+        screen.fill(LIGHTDARK)
         mx, my = pygame.mouse.get_pos()
- 
-        button_1 = pygame.Rect(100, 100, 200, 50)
-        button_2 = pygame.Rect(100, 175, 200, 50)
-        if button_1.collidepoint((mx, my)):
-            if click:
-                game()
-        if button_2.collidepoint((mx, my)):
-            if click:
-                options()
-        pygame.draw.rect(screen, (255, 0, 0), button_1)
-        draw_text('Game', pygame.font.SysFont(fonts[i], 40), (255, 255, 255), screen, 150, 100)
-        pygame.draw.rect(screen, (255, 0, 0), button_2)
-        draw_text('Option', pygame.font.SysFont(fonts[i], 40), (255, 255, 255), screen, 150, 170)
-
-        click = False
+        draw_text('Chess', title, WHITE, screen, 10, 10)
+        
+        # offline
+        draw_button('Offline', text, WHITE, screen, 10, 10, 25, 100, SIZE-50, 50, DARKER, offline, mx, my, click)
+        # host game
+        draw_button('Host', text, WHITE, screen, 10, 10, 25, 160, SIZE-50, 50, DARKER, host, mx, my, click)
+        # join game
+        draw_button('Join', text, WHITE, screen, 10, 10, 25, 220, SIZE-50, 50, DARKER, join, mx, my, click)
+        # options
+        draw_button('Options', text, WHITE, screen, 10, 10, 25, 280, SIZE-50, 50, DARKER, options, mx, my, click)
+        click = False   
+        
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
-                if event.key == K_RIGHT:
-                    if(i < len(fonts)+1):
-                        i += 1
-                    else:
-                        i = 0
-                if event.key == K_LEFT:
-                    if(i < len(fonts)+1):
-                        i -= 1
-                    else:
-                        i = 0
-            if event.type == MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     click = True
- 
         pygame.display.update()
         mainClock.tick(60)
  
 def game():
     running = True
     while running:
-        main()
+        # main()
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    running = False
-        
-        pygame.display.update()
-        mainClock.tick(60)
- 
-def options():
-    running = True
-    while running:
-        screen.fill((0,0,0))
- 
-        draw_text('options', font, (255, 255, 255), screen, 20, 20)
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     running = False
         
         pygame.display.update()
         mainClock.tick(60)
 
-main_menu()
+def offline():
+    pass
+
+def host():
+    pass
+
+def join():
+    pass
+
+def options():
+    running = True
+    while running:
+        screen.fill((0,0,0))
+ 
+        draw_text('options', title, (255, 255, 255), screen, 20, 20)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+        
+        pygame.display.update()
+        mainClock.tick(60)
+
+if __name__ == "__main__": 
+    main_menu()
