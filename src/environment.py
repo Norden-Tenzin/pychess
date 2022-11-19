@@ -40,7 +40,7 @@ def draw_board(screen):
             pygame.draw.rect(screen, WHITE, ((y+1)*CELLSIZE,
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
-def draw_font(screen):
+def draw_font(play_as, screen):
     pygame.font.init()
     numbs = ["8", "7", "6", "5", "4", "3", "2", "1"]
     alpha = ["a", "b", "c", "d", "e", "f", "g", "h"]
@@ -121,7 +121,7 @@ def write_notation(name, to):
     pass
 
 # TODO seperate the gameloop with rendering the board
-def game_loop(screen, maparr, playAs):
+def game_loop(screen, maparr, play_as):
     move_mem = []
     curr_turn = 0
 
@@ -146,7 +146,7 @@ def game_loop(screen, maparr, playAs):
                         if chesspiece.rect.collidepoint(posx, posy):
                             path = None
                             chesspiece.clicked = True
-                            path, curr = chesspiece.clear_paths(posx, posy, playAs, maparr)
+                            path, curr = chesspiece.clear_paths(posx, posy, play_as, maparr)
                             is_path = True
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -222,7 +222,7 @@ def game_loop(screen, maparr, playAs):
         if is_path:
             draw_path(screen, path, curr)
 
-        draw_font(screen)
+        draw_font(play_as, screen)
         blackpieces.draw(screen)
         whitepieces.draw(screen)
         pygame.display.flip()
