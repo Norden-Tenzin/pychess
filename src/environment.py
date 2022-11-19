@@ -41,20 +41,28 @@ def draw_board(screen):
             pygame.draw.rect(screen, WHITE, ((y+1)*CELLSIZE,
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
-def draw_font(screen):
+def draw_font(play_as, screen):
     pygame.font.init()
-    numbs = ["8", "7", "6", "5", "4", "3", "2", "1"]
-    alpha = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    numbs = NUMBS.copy()
+    alpha = ALPHA[::-1].copy()
     colornumbs = [DARKER, WHITE]
     coloralpha = [WHITE, DARKER]
-
     myfont = pygame.font.SysFont('arialblack', 15)
-    for i in range(0, 8):
-        textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
-        screen.blit(textSurface, (2, CELLSIZE * i))
-    for i in range(0, 8):
-        textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
-        screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
+
+    if play_as == 1:
+        for i in range(0, 8):
+            textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
+            screen.blit(textSurface, (2, CELLSIZE * i))
+        for i in range(0, 8):
+            textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
+            screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
+    elif play_as == 0:
+        for i in range(0, 8):
+            textSurface = myfont.render(numbs[::-1][i], True, colornumbs[i % 2])
+            screen.blit(textSurface, (2, CELLSIZE * i))
+        for i in range(0, 8):
+            textSurface = myfont.render(alpha[::-1][i], True, coloralpha[i % 2])
+            screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
 
 def draw_path(screen, path, curr):
     currx, curry = curr
@@ -68,7 +76,7 @@ def draw_path(screen, path, curr):
             # pygame.draw.rect(screen, RED, (CELLSIZE*v['hit'][1], CELLSIZE*v['hit'][0], CELLSIZE, CELLSIZE))
     pygame.draw.rect(screen, ORANGE, (currx, curry, CELLSIZE, CELLSIZE))
 
-def draw_pieces(screen, board):  # 3
+def draw_pieces(board, screen):  # 3
     maparr = board
     letterHolder = ""
     for i, line in enumerate(maparr):
@@ -122,10 +130,10 @@ def write_notation(name, to):
     pass
 
 # TODO seperate the gameloop with rendering the board
-def game_loop(screen, maparr, playAs):
+def game_loop(screen, maparr, game_hist, play_as):
     move_mem = []
-    curr_turn = 0
 
+    curr_turn = 0
     game_map_arr = maparr
     selected = []
     is_path = False
@@ -147,7 +155,7 @@ def game_loop(screen, maparr, playAs):
                         if chesspiece.rect.collidepoint(posx, posy):
                             path = None
                             chesspiece.clicked = True
-                            path, curr = chesspiece.clear_paths(posx, posy, playAs, maparr)
+                            path, curr = chesspiece.clear_paths(posx, posy, play_as, maparr)
                             is_path = True
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -156,37 +164,36 @@ def game_loop(screen, maparr, playAs):
                 
                 # if a chess piece has been selected 
                 if selected: 
-
-                    print(curr_turn)
                     move_line = []
                     # if its the white's turn and the selected piece is also white
                     if curr_turn == 0 and selected[0].name[0].islower():
-                        old_pos = location_to_pos(selected[0].location)
+                        print("HERE1")
+                        old_pos = location_to_pos(play_as, selected[0].location)
                         pos = math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE)
 
-                        movekind, game_map_arr, is_path = selected[0].move(posx, posy, game_map_arr)
+                        movekind, game_map_arr, is_path = selected[0].move(play_as, posx, posy, game_map_arr)
 
-                        print(movekind)
+                        print("MOVEKIND: {}".format(movekind))
 
                         if movekind > -1:
                             curr_turn = 1
                             name = selected[0].name
-
-
                             move_mem.append("WHITE: NAME: {} FROM: [{},{}] TO: [{},{}]".format(name, old_pos[1], old_pos[0], pos[1], pos[0]))
-
+                            game_hist.set_turn(name, old_pos[1], old_pos[0], pos[1], pos[0])
                             # get new_location
                             # add move_line
                         else:
+                            print("HERE11")
                             # recenter
-                            oldPos = location_to_pos(selected[0].location)
-                            movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
+                            oldPos = location_to_pos(play_as, selected[0].location)
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, oldPos[1], oldPos[0], game_map_arr)
                     # if its the black's turn and the selected piece is also black
                     elif curr_turn == 1 and selected[0].name[0].isupper():
-                        old_pos = location_to_pos(selected[0].location)
+                        print("HERE2")
+                        old_pos = location_to_pos(play_as, selected[0].location)
                         pos = math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE)
 
-                        movekind, game_map_arr, is_path = selected[0].move(posx, posy, game_map_arr)
+                        movekind, game_map_arr, is_path = selected[0].move(play_as, posx, posy, game_map_arr)
                         
                         print(movekind)
 
@@ -194,23 +201,28 @@ def game_loop(screen, maparr, playAs):
                             curr_turn = 0
                             name = selected[0].name
                             move_mem.append("BLACK: NAME: {} FROM: [{},{}] TO: [{},{}]".format(name, old_pos[1], old_pos[0], pos[1], pos[0]))
-
+                            game_hist.set_turn(name, old_pos[1], old_pos[0], pos[1], pos[0])
                             # add move_line
                         else:
+                            print("HERE22")
                             # recenter
-                            oldPos = location_to_pos(selected[0].location)
-                            movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
+                            oldPos = location_to_pos(play_as, selected[0].location)
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, oldPos[1], oldPos[0], game_map_arr)
                     # else not the right turn
                     else:
-                        oldPos = location_to_pos(selected[0].location)
-                        movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
+                        print("HERE3")
+                        print(selected[0].location)
+                        oldPos = location_to_pos(play_as, selected[0].location)
+                        print(oldPos)
+                        movekind, game_map_arr, is_path = selected[0].move(play_as, oldPos[1], oldPos[0], game_map_arr)
 
                     if selected[0].name.strip()[0].islower() and movekind == 1:
                         collision_list = pygame.sprite.spritecollide(selected[0], blackpieces, True)
                     elif selected[0].name.strip()[0].isupper() and movekind == 1:
                         collision_list = pygame.sprite.spritecollide(selected[0], whitepieces, True)
                     selected = []
-                    
+                print("CURR TURN: {}".format(curr_turn))  
+
         for chesspiece in boardpieces:
             if chesspiece.clicked == True:
                 selected = [chesspiece]
@@ -223,7 +235,11 @@ def game_loop(screen, maparr, playAs):
         if is_path:
             draw_path(screen, path, curr)
 
-        draw_font(screen)
-        blackpieces.draw(screen)
-        whitepieces.draw(screen)
+        draw_font(play_as, screen)
+        if play_as == 0:
+            blackpieces.draw(screen)
+            whitepieces.draw(screen)
+        else:
+            whitepieces.draw(screen)
+            blackpieces.draw(screen)
         pygame.display.flip()

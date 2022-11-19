@@ -102,7 +102,7 @@ def board_arr_maker(play_as, pieces_to_show = None):
 #     file.writelines(oneBoard)
 
 if __name__ == "__main__":
-    play_as = 1
+    play_as = 0
     b = board_arr_maker(play_as, ['ki', 'Ki', 'qu', 'Qu'])
     print(np.matrix(board_empty(play_as)))
     # print(np.matrix(b))

@@ -61,7 +61,7 @@ class King(Chessmen):
                     else:
                         return self.make_obj(curr_path, [])
 
-    def clear_paths(self, posx, posy, playAs, maparr):
+    def clear_paths(self, posx, posy, play_as, maparr):
         currx, curry = math.floor(posx/50)*CELLSIZE, math.floor(posy/50)*CELLSIZE
 
         # vertiacl
@@ -109,7 +109,7 @@ class King(Chessmen):
             "sw": sw_path
         }, (currx, curry))
 
-    def move_set(self, posx, posy, maparr):
+    def move_set(self, play_as, posx, posy, maparr):
         for i, line in enumerate(maparr):
             for j, tile in enumerate(line):
                 if tile.split("-")[1] == self.name:
@@ -118,45 +118,45 @@ class King(Chessmen):
                     else:
                         return False
 
-    def possible_moves(self, posx, posy, maparr):
-        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(posx, posy, maparr):
+    def possible_moves(self, play_as, posx, posy, maparr):
+        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(play_as, posx, posy, maparr):
             return True
         else:
             return False
 
-    def enemy_detect(self, posx, posy, maparr):  # if the enemy is on that pos
+    def enemy_detect(self, play_as, posx, posy, maparr):  # if the enemy is on that pos
         if self.name.strip()[0].islower():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.move_set(posx, posy, maparr):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.move_set(play_as, posx, posy, maparr):
                 return True
             else:
                 return False
         elif self.name.strip()[0].isupper():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.move_set(posx, posy, maparr):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.move_set(play_as, posx, posy, maparr):
                 return True
             else:
                 return False
 
-    def move(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
 
         # case when the piece isnt moved from its curr pos
         if math.floor(posx/CELLSIZE) == pos[1] and math.floor(posy/CELLSIZE) == pos[0]:
             return (-1, maparr, True)
             
-        if self.possible_moves(posx, posy, maparr):
+        if self.possible_moves(play_as, posx, posy, maparr):
             maparr = writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (0, maparr, False)
-        elif self.enemy_detect(posx, posy, maparr):
+        elif self.enemy_detect(play_as, posx, posy, maparr):
             maparr = writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (1, maparr, False)
         else:
@@ -213,7 +213,7 @@ class Queen(Chessmen):
                     else:
                         return self.make_obj(curr_path, [])
 
-    def clear_paths(self, posx, posy, playAs, maparr):
+    def clear_paths(self, posx, posy, play_as, maparr):
         currx, curry = math.floor(posx/50)*CELLSIZE, math.floor(posy/50)*CELLSIZE
 
         # vertiacl
@@ -261,8 +261,8 @@ class Queen(Chessmen):
             "sw": sw_path
         }, (currx, curry))
 
-    def move_set(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move_set(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
         xoffset = abs(math.floor(posx/50) - pos[1])
         yoffset = abs(math.floor(posy/50) - pos[0])
 
@@ -275,7 +275,7 @@ class Queen(Chessmen):
         else:
             return False
 
-    def possible_moves(self, posx, posy, maparr):
+    def possible_moves(self, play_as, posx, posy, maparr):
         def get_dir(curr, pos):
             # N
             if curr[1] == pos[1] and curr[0] > pos[0]:
@@ -305,7 +305,7 @@ class Queen(Chessmen):
             if curr[0] == pos[0] and curr[1] == pos[1]:
                 return "cc"
         
-        curry, currx = location_to_pos(self.location)
+        curry, currx = location_to_pos(play_as, self.location)
         direction = get_dir([curry, currx], [math.floor(posy/50), math.floor(posx/50)])
         path = self.clear_path(direction, currx*CELLSIZE, curry*CELLSIZE, maparr, [])['open']
         if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(posx, posy, maparr) and [math.floor(posy/50), math.floor(posx/50)] in path:
@@ -315,37 +315,37 @@ class Queen(Chessmen):
 
     def enemy_detect(self, posx, posy, maparr):
         if self.name.strip()[0].islower():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.move_set(posx, posy, maparr):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.move_set(play_as, posx, posy, maparr):
                 return True
             else:
                 return False
         elif self.name.strip()[0].isupper():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.move_set(posx, posy, maparr):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.move_set(play_as, posx, posy, maparr):
                 return True
             else:
                 return False
 
-    def move(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
 
         # case when the piece isnt moved from its curr pos
         if math.floor(posx/CELLSIZE) == pos[1] and math.floor(posy/CELLSIZE) == pos[0]:
             return (-1, maparr, True)
 
-        if self.possible_moves(posx, posy, maparr):
+        if self.possible_moves(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (0, maparr, False)
-        elif self.enemy_detect(posx, posy, maparr):
+        elif self.enemy_detect(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (1, maparr, False)
         else:
@@ -402,7 +402,7 @@ class Bishop(Chessmen):
                     else:
                         return self.make_obj(curr_path, [])
 
-    def clear_paths(self, posx, posy, playAs, maparr):
+    def clear_paths(self, posx, posy, play_as, maparr):
         currx, curry = math.floor(posx/50)*CELLSIZE, math.floor(posy/50)*CELLSIZE
         # diagonal pos to North East +-
         ne_path = self.clear_path("+-", currx, curry, maparr, [])
@@ -428,7 +428,7 @@ class Bishop(Chessmen):
         }, (currx, curry))
         
     def move_set(self, posx, posy):
-        pos = location_to_pos(self.location)
+        pos = location_to_pos(play_as, self.location)
         xoffset = abs(math.floor(posx/50) - pos[1])
         yoffset = abs(math.floor(posy/50) - pos[0])
         if xoffset == yoffset:
@@ -436,7 +436,7 @@ class Bishop(Chessmen):
         else:
             return False
 
-    def possible_moves(self, posx, posy, maparr):
+    def possible_moves(self, play_as, posx, posy, maparr):
         def get_dir(curr, pos):
             # N
             if curr[1] == pos[1] and curr[0] > pos[0]:
@@ -467,7 +467,7 @@ class Bishop(Chessmen):
             if curr[0] == pos[0] and curr[1] == pos[1]:
                 return "cc"
         
-        curry, currx = location_to_pos(self.location)
+        curry, currx = location_to_pos(play_as, self.location)
         direction = get_dir([curry, currx], [math.floor(posy/50), math.floor(posx/50)])
         path = self.clear_path(direction, currx*CELLSIZE, curry*CELLSIZE, maparr, [])['open']
 
@@ -488,27 +488,27 @@ class Bishop(Chessmen):
             else:
                 return False
 
-    def move(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
 
         # case when the piece isnt moved from its curr pos
         if math.floor(posx/CELLSIZE) == pos[1] and math.floor(posy/CELLSIZE) == pos[0]:
             return (-1, maparr, True)
 
-        if self.possible_moves(posx, posy, maparr):
+        if self.possible_moves(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (0, maparr, False)
-        elif self.enemy_detect(posx, posy, maparr):
+        elif self.enemy_detect(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (1, maparr, False)
         else:
@@ -591,7 +591,7 @@ class Knight(Chessmen):
 
         return self.make_obj([], [])
         
-    def clear_paths(self, posx, posy, playAs, maparr):
+    def clear_paths(self, posx, posy, play_as, maparr):
         currx, curry = math.floor(posx/50)*CELLSIZE, math.floor(posy/50)*CELLSIZE
         
         # up
@@ -613,8 +613,8 @@ class Knight(Chessmen):
             "s" : d_path,
         }, (currx, curry))
 
-    def move_set(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move_set(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
 
         if (math.floor(posy/50) == pos[0] - 2 and (math.floor(posx/50) == pos[1] - 1 or math.floor(posx/50) == pos[1] + 1)) or (math.floor(posy/50) == pos[0] + 2 and (math.floor(posx/50) == pos[1] - 1 or math.floor(posx/50) == pos[1] + 1)):
             return True
@@ -623,45 +623,45 @@ class Knight(Chessmen):
         else:
             return False
 
-    def possible_moves(self, posx, posy, maparr):
-        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(posx, posy, maparr):
+    def possible_moves(self, play_as, posx, posy, maparr):
+        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(play_as, posx, posy, maparr):
             return True
         else:
             return False
 
     def enemy_detect(self, posx, posy, maparr):
         if self.name.strip()[0].islower():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.move_set(posx, posy, maparr):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].isupper() and self.move_set(play_as, posx, posy, maparr):
                 return True
             else:
                 return False
         elif self.name.strip()[0].isupper():
-            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.move_set(posx, posy, maparr):
+            if maparr[math.floor(posy/50)][math.floor(posx/50)].split("-")[1].strip()[0].islower() and self.move_set(play_as, posx, posy, maparr):
                 return True
             else:
                 return False
     
-    def move(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
 
         # case when the piece isnt moved from its curr pos
         if math.floor(posx/CELLSIZE) == pos[1] and math.floor(posy/CELLSIZE) == pos[0]:
             return (-1, maparr, True)
 
-        if self.possible_moves(posx, posy, maparr):
+        if self.possible_moves(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (0, maparr, False)
-        elif self.enemy_detect(posx, posy, maparr):
+        elif self.enemy_detect(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (1, maparr, False)
         else:
@@ -718,7 +718,7 @@ class Rook(Chessmen):
                     else:
                         return self.make_obj(curr_path, [])
 
-    def clear_paths(self, posx, posy, playAs, maparr):
+    def clear_paths(self, posx, posy, play_as, maparr):
         currx, curry = math.floor(posx/50)*CELLSIZE, math.floor(posy/50)*CELLSIZE
 
         # vertiacl
@@ -746,7 +746,7 @@ class Rook(Chessmen):
         }, (currx, curry))
 
     def move_set(self, posx, posy):
-        pos = location_to_pos(self.location)
+        pos = location_to_pos(play_as, self.location)
 
         if 0 <= math.floor(posx/50) <= 7 and math.floor(posy/50) == pos[0]:
             return True
@@ -755,7 +755,7 @@ class Rook(Chessmen):
         else:
             return False
 
-    def possible_moves(self, posx, posy, maparr):
+    def possible_moves(self, play_as, posx, posy, maparr):
         def get_dir(curr, pos):
             # N
             if curr[1] == pos[1] and curr[0] > pos[0]:
@@ -785,7 +785,7 @@ class Rook(Chessmen):
             if curr[0] == pos[0] and curr[1] == pos[1]:
                 return "cc"
         
-        curry, currx = location_to_pos(self.location)
+        curry, currx = location_to_pos(play_as, self.location)
         direction = get_dir([curry, currx], [math.floor(posy/50), math.floor(posx/50)])
         path = self.clear_path(direction, currx*CELLSIZE, curry*CELLSIZE, maparr, [])['open']
         if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(posx, posy) and [math.floor(posy/50), math.floor(posx/50)] in path:
@@ -805,27 +805,27 @@ class Rook(Chessmen):
             else:
                 return False
 
-    def move(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
 
         # case when the piece isnt moved from its curr pos
         if math.floor(posx/CELLSIZE) == pos[1] and math.floor(posy/CELLSIZE) == pos[0]:
             return (-1, maparr, True)
 
-        if self.possible_moves(posx, posy, maparr):
+        if self.possible_moves(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (0, maparr, False)
-        elif self.enemy_detect(posx, posy, maparr):
+        elif self.enemy_detect(play_as, posx, posy, maparr):
             writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (1, maparr, False)
         else:
@@ -914,16 +914,16 @@ class Pawn(Chessmen):
                 curr_path, hit_lst = first_step(currx, curry, curr_path)
                 return self.make_obj(curr_path, hit_lst)
 
-    def clear_paths(self, posx, posy, playAs, maparr):
+    def clear_paths(self, posx, posy, play_as, maparr):
         currx, curry = math.floor(posx/50), math.floor(posy/50)
 
         # playing as white
-        if playAs == 0:
+        if play_as == 0:
             if self.name[0].islower():
                 path = self.clear_path("c-", currx, curry-1, -1, maparr, [])
             else:
                 path = self.clear_path("c-", currx, curry+1, 1, maparr, [])
-        elif playAs == 1:
+        elif play_as == 1:
             if self.name[0].upper():
                 path = self.clear_path("c-", currx, curry-1, -1, maparr, [])
             else:
@@ -933,34 +933,73 @@ class Pawn(Chessmen):
             "p" : path,
         }, (currx*CELLSIZE, curry*CELLSIZE))
 
-    def move_set(self, posx, posy, maparr):
+    def move_set(self, play_as, posx, posy, maparr):
+        print("IN MOVESET")
         pos = self.location
-        pos = location_to_pos(self.location)
-        if self.name.strip()[0].islower():
-            if self.firstTimeMove == True and math.floor(posx/50) == pos[1] and pos[0]-2 <= math.floor(posy/50) <= pos[0]-1:
-                self.firstTimeMove = False
-                return True
-            elif self.firstTimeMove == False and math.floor(posx/50) == pos[1] and pos[0]-1 == math.floor(posy/50):
-                return True
-            else:
-                return False
-        elif self.name.strip()[0].isupper():
-            if self.firstTimeMove == True and math.floor(posx/50) == pos[1] and pos[0]+1 <= math.floor(posy/50) <= pos[0]+2:
-                self.firstTimeMove = False
-                return True
-            elif self.firstTimeMove == False and math.floor(posx/50) == pos[1] and pos[0]+1 == math.floor(posy/50):
-                return True
-            else:
-                return False
-
-    def possible_moves(self, posx, posy, maparr):
-        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
+        # pos[0] == y and pos[1] == x 
+        print("POS: {}".format(pos))
+        print(play_as)
+        if play_as == 0:
+            print("HERE _ white")
+            if self.name.strip()[0].islower():
+                print("HERE _ white")
+                if self.firstTimeMove == True and math.floor(posx/50) == pos[1] and pos[0]-2 <= math.floor(posy/50) <= pos[0]-1:
+                    print("HERE _ white1")
+                    self.firstTimeMove = False
+                    return True
+                elif self.firstTimeMove == False and math.floor(posx/50) == pos[1] and pos[0]-1 == math.floor(posy/50):
+                    print("HERE _ white2")
+                    return True
+                else:
+                    print("HERE _ white3")
+                    return False
+            elif self.name.strip()[0].isupper():
+                if self.firstTimeMove == True and math.floor(posx/50) == pos[1] and pos[0]+1 <= math.floor(posy/50) <= pos[0]+2:
+                    self.firstTimeMove = False
+                    return True
+                elif self.firstTimeMove == False and math.floor(posx/50) == pos[1] and pos[0]+1 == math.floor(posy/50):
+                    return True
+                else:
+                    return False
+        elif play_as == 1:
+            if self.name.strip()[0].isupper():
+                print("HERE _ black")
+                if self.firstTimeMove == True and math.floor(posx/50) == pos[1] and pos[0]-2 <= math.floor(posy/50) <= pos[0]-1:
+                    print("HERE _ black1")
+                    self.firstTimeMove = False
+                    return True
+                elif self.firstTimeMove == False and math.floor(posx/50) == pos[1] and pos[0]-1 == math.floor(posy/50):
+                    print("HERE _ black2")
+                    return True
+                else:
+                    print("HERE _ black3")
+                    return False
+            elif self.name.strip()[0].islower():
+                print("HERE _ white")
+                if self.firstTimeMove == True and math.floor(posx/50) == pos[1] and pos[0]+1 <= math.floor(posy/50) <= pos[0]+2:
+                    print("HERE _ white1")
+                    self.firstTimeMove = False
+                    return True
+                elif self.firstTimeMove == False and math.floor(posx/50) == pos[1] and pos[0]+1 == math.floor(posy/50):
+                    print("HERE _ white2")
+                    return True
+                else:
+                    print("HERE _ white3")
+                    return False
+        else:
+            print("IN ELSE")
+    def possible_moves(self, play_as, posx, posy, maparr):
+        print("POS: {}{}".format(math.floor(posx/50),math.floor(posy/50)))
+        print(np.array(maparr))
+        print("SPACE: {}".format(maparr[math.floor(posy/50)][math.floor(posx/50)]))
+        if maparr[math.floor(posy/50)][math.floor(posx/50)].find("##") >= 0 and self.move_set(play_as, posx, posy, maparr):
             return True
         else:
             return False
 
-    def enemy_detect(self, posx, posy, maparr):  
-        pos = location_to_pos(self.location)
+    def enemy_detect(self, play_as, posx, posy, maparr):  
+        pos = location_to_pos(play_as, self.location)
 
         # if piece is white
         if self.name.strip()[0].islower():
@@ -981,8 +1020,8 @@ class Pawn(Chessmen):
             else:
                 return False
 
-    def move(self, posx, posy, maparr):
-        pos = location_to_pos(self.location)
+    def move(self, play_as, posx, posy, maparr):
+        pos = location_to_pos(play_as, self.location)
         # print(math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE))
         # print(pos)
 
@@ -991,20 +1030,21 @@ class Pawn(Chessmen):
             return (-1, maparr, True)
         
         # case when the piece is moved
-        if self.possible_moves(posx, posy, maparr):
+        print(posx, posy)
+        if self.possible_moves(play_as, posx, posy, maparr):
             maparr = writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (0, maparr, False)
-        elif self.enemy_detect(posx, posy, maparr):
+        elif self.enemy_detect(play_as, posx, posy, maparr):
             maparr = writeGame(self, posx, posy, maparr)
             self.rect.x = math.floor(posx/50) * 50
             self.rect.y = math.floor(posy/50) * 50
             pos = [math.floor(posy/50), math.floor(posx/50)]
-            newlocation = pos_to_location(pos)
+            newlocation = pos_to_location(play_as, pos)
             self.location = newlocation
             return (1, maparr, False)
         else:
