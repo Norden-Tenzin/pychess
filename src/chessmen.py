@@ -13,15 +13,19 @@ class Chessmen(pygame.sprite.Sprite):
 
 # King
 class King(Chessmen):
-    def __init__(self, name, location, xpos, ypos):
+    def __init__(self, play_as, name, location, xpos, ypos):
         super().__init__()
         self.clicked = False
         self.name = name
         self.location = location
-        if(self.name.islower()):
+        if(play_as == 0 and self.name.islower()):
             self.image = pygame.image.load(W_KING)
-        else:
+        if(play_as == 0 and not self.name.islower()):
             self.image = pygame.image.load(B_KING)
+        if(play_as == 1 and self.name.islower()):
+            self.image = pygame.image.load(B_KING)
+        if(play_as == 1 and not self.name.islower()):
+            self.image = pygame.image.load(W_KING)
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
@@ -166,15 +170,19 @@ class King(Chessmen):
 
 # Queen
 class Queen(Chessmen):
-    def __init__(self, name, location, xpos, ypos):
+    def __init__(self, play_as, name, location, xpos, ypos):
         super().__init__()
         self.clicked = False
         self.name = name
         self.location = location
-        if(self.name.islower()):
+        if(play_as == 0 and self.name.islower()):
             self.image = pygame.image.load(W_QUEEN)
-        else:
+        if(play_as == 0 and not self.name.islower()):
             self.image = pygame.image.load(B_QUEEN)
+        if(play_as == 1 and self.name.islower()):
+            self.image = pygame.image.load(B_QUEEN)
+        if(play_as == 1 and not self.name.islower()):
+            self.image = pygame.image.load(W_QUEEN)
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
@@ -355,15 +363,19 @@ class Queen(Chessmen):
 
 # Bishop
 class Bishop(Chessmen):
-    def __init__(self, name, location, xpos, ypos):
+    def __init__(self, play_as, name, location, xpos, ypos):
         super().__init__()
         self.clicked = False
         self.name = name
         self.location = location
-        if(self.name.islower()):
+        if(play_as == 0 and self.name.islower()):
             self.image = pygame.image.load(W_BISHOP)
-        else:
+        if(play_as == 0 and not self.name.islower()):
             self.image = pygame.image.load(B_BISHOP)
+        if(play_as == 1 and self.name.islower()):
+            self.image = pygame.image.load(B_BISHOP)
+        if(play_as == 1 and not self.name.islower()):
+            self.image = pygame.image.load(W_BISHOP)
         self.rect = self.image.get_rect()
         self.rect.x = xpos
         self.rect.y = ypos
@@ -518,14 +530,18 @@ class Bishop(Chessmen):
 
 # Knight
 class Knight(Chessmen):
-    def __init__(self, name, location, xpos, ypos):
+    def __init__(self, play_as, name, location, xpos, ypos):
         super().__init__()
         self.name = name
         self.location = location
-        if(self.name.islower()):
+        if(play_as == 0 and self.name.islower()):
             self.image = pygame.image.load(W_KNIGHT)
-        else:
+        if(play_as == 0 and not self.name.islower()):
             self.image = pygame.image.load(B_KNIGHT)
+        if(play_as == 1 and self.name.islower()):
+            self.image = pygame.image.load(B_KNIGHT)
+        if(play_as == 1 and not self.name.islower()):
+            self.image = pygame.image.load(W_KNIGHT)
         self.clicked = False
         self.rect = self.image.get_rect()
         self.rect.x = xpos
@@ -671,14 +687,18 @@ class Knight(Chessmen):
 
 # Rook
 class Rook(Chessmen):
-    def __init__(self, name, location, xpos, ypos):
+    def __init__(self, play_as, name, location, xpos, ypos):
         super().__init__()
         self.name = name
         self.location = location
-        if(self.name.islower()):
+        if(play_as == 0 and self.name.islower()):
             self.image = pygame.image.load(W_ROOK)
-        else:
+        elif(play_as == 0 and not self.name.islower()):
             self.image = pygame.image.load(B_ROOK)
+        elif(play_as == 1 and self.name.islower()):
+            self.image = pygame.image.load(B_ROOK)
+        elif(play_as == 1 and not self.name.islower()):
+            self.image = pygame.image.load(W_ROOK)
         self.clicked = False
         self.rect = self.image.get_rect()
         self.rect.x = xpos
@@ -835,14 +855,18 @@ class Rook(Chessmen):
 
 # Pawn
 class Pawn(Chessmen):
-    def __init__(self, name, location, xpos, ypos):
+    def __init__(self, play_as, name, location, xpos, ypos):
         super().__init__()
         self.name = name
         self.location = location
-        if(self.name.islower()):
+        if(play_as == 0 and self.name.islower()):
             self.image = pygame.image.load(W_PAWN)
-        else:
+        if(play_as == 0 and not self.name.islower()):
             self.image = pygame.image.load(B_PAWN)
+        if(play_as == 1 and self.name.islower()):
+            self.image = pygame.image.load(B_PAWN)
+        if(play_as == 1 and not self.name.islower()):
+            self.image = pygame.image.load(W_PAWN)
         self.clicked = False
         self.firstTimeMove = True
         self.rect = self.image.get_rect()

@@ -1,24 +1,23 @@
 from chessmen import *
-import image_resizer
 import constants
 from board_maker import board_arr_maker
-# loading images
 
-# Black pieces 
-b_bishop = pygame.image.load(B_BISHOP)
-b_king = pygame.image.load(B_KING)
-b_knight = pygame.image.load(B_KNIGHT)
-b_pawn = pygame.image.load(B_PAWN)
-b_queen = pygame.image.load(B_QUEEN)
-b_rook = pygame.image.load(B_ROOK)
+# # loading images
+# # Black pieces 
+# b_bishop = pygame.image.load(B_BISHOP)
+# b_king = pygame.image.load(B_KING)
+# b_knight = pygame.image.load(B_KNIGHT)
+# b_pawn = pygame.image.load(B_PAWN)
+# b_queen = pygame.image.load(B_QUEEN)
+# b_rook = pygame.image.load(B_ROOK)
 
-# White pieces
-w_bishop = pygame.image.load(W_BISHOP)
-w_king = pygame.image.load(W_KING)
-w_knight = pygame.image.load(W_KNIGHT)
-w_pawn = pygame.image.load(W_PAWN)
-w_queen = pygame.image.load(W_QUEEN)
-w_rook = pygame.image.load(W_ROOK)
+# # White pieces
+# w_bishop = pygame.image.load(W_BISHOP)
+# w_king = pygame.image.load(W_KING)
+# w_knight = pygame.image.load(W_KNIGHT)
+# w_pawn = pygame.image.load(W_PAWN)
+# w_queen = pygame.image.load(W_QUEEN)
+# w_rook = pygame.image.load(W_ROOK)
 
 # Sprite Groups
 whitepieces = pygame.sprite.Group()
@@ -76,45 +75,45 @@ def draw_pieces(screen, board, play_as):
             if(tile.split("-")[1].lower() == "bi"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Bishop(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Bishop(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Bishop(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Bishop(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "ki"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        King(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        King(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        King(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        King(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "kn"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Knight(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Knight(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Knight(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Knight(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "pa"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Pawn(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Pawn(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Pawn(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Pawn(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "qu"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Queen(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Queen(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Queen(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Queen(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
             elif(tile.split("-")[1].lower() == "ro"):
                 if(tile.split("-")[1].strip()[0].islower()):
                     whitepieces.add(
-                        Rook(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Rook(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
                 else:
                     blackpieces.add(
-                        Rook(tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
+                        Rook(play_as, tile.split("-")[1], tile.split("-")[0], (j)*CELLSIZE, (i)*CELLSIZE))
     boardpieces.add(whitepieces)
     boardpieces.add(blackpieces)
 
@@ -157,7 +156,7 @@ def game_loop(screen, maparr, playAs):
                 # if a chess piece has been selected 
                 if selected: 
 
-                    print(curr_turn)
+                    print("CURR TURN: {}".format(curr_turn))
                     move_line = []
                     # if its the white's turn and the selected piece is also white
                     if curr_turn == 0 and selected[0].name[0].islower():
@@ -166,7 +165,7 @@ def game_loop(screen, maparr, playAs):
 
                         movekind, game_map_arr, is_path = selected[0].move(posx, posy, game_map_arr)
 
-                        print(movekind)
+                        print("MOVEKIND: {}".format(movekind))
 
                         if movekind > -1:
                             curr_turn = 1
