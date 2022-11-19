@@ -68,7 +68,7 @@ def draw_path(screen, path, curr):
             # pygame.draw.rect(screen, RED, (CELLSIZE*v['hit'][1], CELLSIZE*v['hit'][0], CELLSIZE, CELLSIZE))
     pygame.draw.rect(screen, ORANGE, (currx, curry, CELLSIZE, CELLSIZE))
 
-def draw_pieces(screen, board):  # 3
+def draw_pieces(screen, board, play_as):
     maparr = board
     letterHolder = ""
     for i, line in enumerate(maparr):
