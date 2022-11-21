@@ -42,18 +42,27 @@ def draw_board(screen):
 
 def draw_font(play_as, screen):
     pygame.font.init()
-    numbs = ["8", "7", "6", "5", "4", "3", "2", "1"]
-    alpha = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    numbs = NUMBS.copy()
+    alpha = ALPHA[::-1].copy()
     colornumbs = [DARKER, WHITE]
     coloralpha = [WHITE, DARKER]
-
     myfont = pygame.font.SysFont('arialblack', 15)
-    for i in range(0, 8):
-        textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
-        screen.blit(textSurface, (2, CELLSIZE * i))
-    for i in range(0, 8):
-        textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
-        screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
+
+    if play_as == 1:
+        for i in range(0, 8):
+            textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
+            screen.blit(textSurface, (2, CELLSIZE * i))
+        for i in range(0, 8):
+            textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
+            screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
+    elif play_as == 0:
+        for i in range(0, 8):
+            textSurface = myfont.render(numbs[::-1][i], True, colornumbs[i % 2])
+            screen.blit(textSurface, (2, CELLSIZE * i))
+        for i in range(0, 8):
+            textSurface = myfont.render(alpha[::-1][i], True, coloralpha[i % 2])
+            screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
+
 
 def draw_path(screen, path, curr):
     currx, curry = curr
@@ -65,7 +74,7 @@ def draw_path(screen, path, curr):
             for x, y in v['hit']:
                 pygame.draw.rect(screen, RED, (CELLSIZE*y, CELLSIZE*x, CELLSIZE, CELLSIZE))
             # pygame.draw.rect(screen, RED, (CELLSIZE*v['hit'][1], CELLSIZE*v['hit'][0], CELLSIZE, CELLSIZE))
-    pygame.draw.rect(screen, ORANGE, (currx, curry, CELLSIZE, CELLSIZE))
+    pygame.draw.rect(screen, ORANGE, (currx*CELLSIZE, curry*CELLSIZE, CELLSIZE, CELLSIZE))
 
 def draw_pieces(screen, board, play_as):
     maparr = board
@@ -120,6 +129,9 @@ def draw_pieces(screen, board, play_as):
 def write_notation(name, to):
     pass
 
+def move_condition(curr_turn, play_as):
+    pass
+
 # TODO seperate the gameloop with rendering the board
 def game_loop(screen, maparr, play_as):
     move_mem = []
@@ -131,6 +143,7 @@ def game_loop(screen, maparr, play_as):
 
     while True:
         posx, posy = pygame.mouse.get_pos()
+        mouse_posy, mouse_posx = math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -146,7 +159,7 @@ def game_loop(screen, maparr, play_as):
                         if chesspiece.rect.collidepoint(posx, posy):
                             path = None
                             chesspiece.clicked = True
-                            path, curr = chesspiece.clear_paths(posx, posy, play_as, maparr)
+                            path, curr = chesspiece.clear_paths(mouse_posx, mouse_posy, play_as, maparr)
                             is_path = True
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -159,51 +172,86 @@ def game_loop(screen, maparr, play_as):
                     print("CURR TURN: {}".format(curr_turn))
                     move_line = []
                     # if its the white's turn and the selected piece is also white
-                    if curr_turn == 0 and selected[0].name[0].islower():
-                        old_pos = location_to_pos(selected[0].location)
-                        pos = math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE)
 
-                        movekind, game_map_arr, is_path = selected[0].move(posx, posy, game_map_arr)
-
-                        print("MOVEKIND: {}".format(movekind))
-
-                        if movekind > -1:
-                            curr_turn = 1
-                            name = selected[0].name
-
-
-                            move_mem.append("WHITE: NAME: {} FROM: [{},{}] TO: [{},{}]".format(name, old_pos[1], old_pos[0], pos[1], pos[0]))
-
-                            # get new_location
-                            # add move_line
-                        else:
-                            # recenter
-                            oldPos = location_to_pos(selected[0].location)
-                            movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
-                    # if its the black's turn and the selected piece is also black
-                    elif curr_turn == 1 and selected[0].name[0].isupper():
-                        old_pos = location_to_pos(selected[0].location)
-                        pos = math.floor(posy/CELLSIZE), math.floor(posx/CELLSIZE)
-
-                        movekind, game_map_arr, is_path = selected[0].move(posx, posy, game_map_arr)
+                    # whites turn
+                    # curr = 0
+                    # play_as = 0
+                    old_posy, old_posx = location_to_pos(play_as, selected[0].location)
+                    selected_name = selected[0].name
+                    print("MOUSE POS: {}, {}".format(mouse_posx, mouse_posy))
+                    if play_as == 0:
+                        print("WHITE PLAYS")
+                        # white
+                        if curr_turn == 0 and selected[0].name.islower():
+                            print("WHITE MOVES")
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, mouse_posx, mouse_posy, game_map_arr)
+                            print("MOVEKIND: {}".format(movekind))
+                            print("is_path: {}".format(is_path))
+                            if movekind > -1:
+                                # successful move, now change turn
+                                curr_turn = 1
+                                move_mem.append("WHITE: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy))
+                            else:
+                                # recenter
+                                movekind, game_map_arr, is_path = selected[0].move(play_as, old_posx, old_posy, game_map_arr)
+                        # black
+                        elif curr_turn == 1 and not selected[0].name.islower():
+                            print("BLACK MOVES")
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, mouse_posx, mouse_posy, game_map_arr)
+                            print("MOVEKIND: {}".format(movekind))
+                            if movekind > -1:
+                                # successful move, now change turn
+                                curr_turn = 0
+                                move_mem.append("BLACK: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy,))
+                            else:
+                                # recenter
+                                oldPos = location_to_pos(play_as, selected[0].location)
+                                movekind, game_map_arr, is_path = selected[0].move(play_as, old_posx, old_posy, game_map_arr)
                         
-                        print(movekind)
-
-                        if movekind > -1:
-                            curr_turn = 0
-                            name = selected[0].name
-                            move_mem.append("BLACK: NAME: {} FROM: [{},{}] TO: [{},{}]".format(name, old_pos[1], old_pos[0], pos[1], pos[0]))
-
-                            # add move_line
+                        # else not the right turn
                         else:
-                            # recenter
-                            oldPos = location_to_pos(selected[0].location)
-                            movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
-                    # else not the right turn
-                    else:
-                        oldPos = location_to_pos(selected[0].location)
-                        movekind, game_map_arr, is_path = selected[0].move(oldPos[1], oldPos[0], game_map_arr)
+                            print("MISS MOVE")
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, old_posx, old_posy, game_map_arr)
+                            print("MOVEKIND: {}".format(movekind))
 
+                    
+                    if play_as == 1:
+                        print("BLACK PLAYS")
+                        # black
+                        if curr_turn == 1 and selected[0].name.islower():
+                            print("BLACK MOVES")
+                            print("MOUSE POS: {}, {}".format(mouse_posx, mouse_posy))
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, mouse_posx, mouse_posy, game_map_arr)
+                            print("MOVEKIND: {}".format(movekind))
+
+                            if movekind > -1:
+                                curr_turn = 0
+                                move_mem.append("WHITE: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy,))
+                                # get new_location
+                                # add move_line
+                            else:
+                                # recenter
+                                movekind, game_map_arr, is_path = selected[0].move(play_as, old_posx, old_posy, game_map_arr)
+                        
+                        # white
+                        elif curr_turn == 0 and not selected[0].name.islower():
+                            print("WHITE MOVES")
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, mouse_posx, mouse_posy, game_map_arr)
+                            print("MOVEKIND: {}".format(movekind))
+
+                            if movekind > -1:
+                                curr_turn = 1
+                                move_mem.append("BLACK: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy,))
+                                # add move_line
+                            else:
+                                # recenter
+                                movekind, game_map_arr, is_path = selected[0].move(play_as, old_posx, old_posy, game_map_arr)
+                        
+                        # else not the right turn
+                        else:
+                            print("MISS MOVE")
+                            movekind, game_map_arr, is_path = selected[0].move(play_as, old_posx, old_posy, game_map_arr)
+                    
                     if selected[0].name.strip()[0].islower() and movekind == 1:
                         collision_list = pygame.sprite.spritecollide(selected[0], blackpieces, True)
                     elif selected[0].name.strip()[0].isupper() and movekind == 1:

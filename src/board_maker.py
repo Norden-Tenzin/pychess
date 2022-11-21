@@ -5,11 +5,12 @@ from constants import *
 alphabetsoup = list(map(chr, range(97, 105)))
 def make_piece_dicts(play_as, pieces_to_show = None):
     # pieces_to_show = ['ki', "Ki"]
+    back_pieces = ["Ro", "Kn", "Bi", "Qu", "Ki", "Bi", "Kn", "Ro", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa"]
+    front_pieces = ["pa", "pa", "pa", "pa", "pa", "pa", "pa", "pa", "ro", "kn", "bi", "qu", "ki", "bi", "kn", "ro"]
     if pieces_to_show:
         front_pieces = [i if i in pieces_to_show else "##" for i in front_pieces]
         back_pieces = [i if i in pieces_to_show else "##" for i in back_pieces]
-    back_pieces = ["Ro", "Kn", "Bi", "Qu", "Ki", "Bi", "Kn", "Ro", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa"]
-    front_pieces = ["pa", "pa", "pa", "pa", "pa", "pa", "pa", "pa", "ro", "kn", "bi", "qu", "ki", "bi", "kn", "ro"]
+        
     if play_as == 0:
         front_temp={}
         for i, a in enumerate(alphabetsoup[::-1] + alphabetsoup[::-1]):
@@ -60,6 +61,24 @@ def board_empty(play_as):
             oneBoard.append(oneList)
             oneList = []
     return oneBoard
+
+def board_empty_just_location(play_as):
+    oneList =[]
+    oneBoard = []
+    if play_as == 0:
+        for x in range(8, 0, -1):
+            for i, y in enumerate(alphabetsoup):
+                oneList.append((y + str(x)))
+            oneBoard.append(oneList)
+            oneList = []
+    if play_as == 1:
+        for x in range(1, 9, 1):
+            for i, y in enumerate(alphabetsoup[::-1]):
+                oneList.append((y + str(x)))
+            oneBoard.append(oneList)
+            oneList = []
+    return oneBoard
+
 
 # play as 0 means white, play as 1 means black. 
 def board_arr_maker(play_as, pieces_to_show = None):
