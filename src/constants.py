@@ -1,3 +1,5 @@
+import pygame
+pygame.font.init()
 # Color
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -9,6 +11,10 @@ GREEN = (0, 255, 0)
 ORANGE = (255,99,71)
 LIGHTORANGE = (255, 157, 143)
 YELLOW  = (255,255,0)
+
+# font
+MYFONT = pygame.font.SysFont('arialblack', 15)
+CURRTURN = pygame.font.SysFont('arialblack', 12)
 
 # Sizes
 UISPACE = 400
@@ -37,4 +43,10 @@ W_ROOK = "../assets/w_rook.png"
 # Lists 
 ALPHA = ["a", "b", "c", "d", "e", "f", "g", "h"]
 NUMBS = ["1", "2", "3", "4", "5", "6", "7", "8"]
+
+BACK_PIECES = ["Ro", "Kn", "Bi", "Qu", "Ki", "Bi", "Kn", "Ro"]
+BACK_PAWNS = ["Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa", "Pa"]
+
+FRONT_PAWNS = ["pa", "pa", "pa", "pa", "pa", "pa", "pa", "pa"]
+FRONT_PIECES = ["ro", "kn", "bi", "qu", "ki", "bi", "kn", "ro"]
 # NUMBS = ["8", "7", "6", "5", "4", "3", "2", "1"]

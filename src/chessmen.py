@@ -883,8 +883,8 @@ class Pawn(Chessmen):
             
             # right
             r_hit = [curry, currx+1]
-            print("L HIT: {}".format(maparr[r_hit[0]][r_hit[1]]))
             if (0 <= r_hit[0] < INDEXSIZE and 0 <= r_hit[1] < INDEXSIZE):
+                print("L HIT: {}".format(maparr[r_hit[0]][r_hit[1]]))
                 # print("INSIDE R_HIT")
                 if maparr[r_hit[0]][r_hit[1]].find("##") < 0:
                     hit = maparr[r_hit[0]][r_hit[1]].split("-")[1]

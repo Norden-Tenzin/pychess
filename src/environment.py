@@ -1,6 +1,6 @@
+from constants import *
 from chessmen import *
-import constants
-from board_maker import board_arr_maker
+from game_notation import GameNotation
 
 # # loading images
 # # Black pieces 
@@ -26,7 +26,7 @@ boardpieces = pygame.sprite.Group()
 
 def initialize():
     pygame.init()
-    screen = pygame.display.set_mode((SIZE, SIZE))
+    screen = pygame.display.set_mode((SIZE, SIZE+20))
     pygame.display.set_caption("Multiplayer Chess")
     return screen
 
@@ -40,27 +40,40 @@ def draw_board(screen):
             pygame.draw.rect(screen, WHITE, ((y+1)*CELLSIZE,
                                             fw*CELLSIZE, CELLSIZE, CELLSIZE))
 
+def draw_show_turn(screen, curr_turn):
+    # SEPERATOR
+    pygame.draw.rect(screen, DARKER, (0, SIZE, SIZE+20, 2))
+    # whites turn
+    
+    if curr_turn == 0:
+        pygame.draw.rect(screen, WHITE, (0, SIZE+2, SIZE+20, 18))
+        textSurface = CURRTURN.render("White's Turn", True, BLACK)
+        screen.blit(textSurface, (5, SIZE))
+    if curr_turn == 1:
+        pygame.draw.rect(screen, BLACK, (0, SIZE+2, SIZE+20, 18))
+        textSurface = CURRTURN.render("Black's Turn", True, WHITE)
+        screen.blit(textSurface, (5, SIZE))
 def draw_font(play_as, screen):
-    pygame.font.init()
+    
     numbs = NUMBS.copy()
     alpha = ALPHA[::-1].copy()
     colornumbs = [DARKER, WHITE]
     coloralpha = [WHITE, DARKER]
-    myfont = pygame.font.SysFont('arialblack', 15)
+    
 
     if play_as == 1:
         for i in range(0, 8):
-            textSurface = myfont.render(numbs[i], True, colornumbs[i % 2])
+            textSurface = MYFONT.render(numbs[i], True, colornumbs[i % 2])
             screen.blit(textSurface, (2, CELLSIZE * i))
         for i in range(0, 8):
-            textSurface = myfont.render(alpha[i], True, coloralpha[i % 2])
+            textSurface = MYFONT.render(alpha[i], True, coloralpha[i % 2])
             screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
     elif play_as == 0:
         for i in range(0, 8):
-            textSurface = myfont.render(numbs[::-1][i], True, colornumbs[i % 2])
+            textSurface = MYFONT.render(numbs[::-1][i], True, colornumbs[i % 2])
             screen.blit(textSurface, (2, CELLSIZE * i))
         for i in range(0, 8):
-            textSurface = myfont.render(alpha[::-1][i], True, coloralpha[i % 2])
+            textSurface = MYFONT.render(alpha[::-1][i], True, coloralpha[i % 2])
             screen.blit(textSurface, ((CELLSIZE * (i+1)) - (CELLSIZE*.25), SIZE - (CELLSIZE*.4)))
 
 
@@ -135,6 +148,7 @@ def move_condition(curr_turn, play_as):
 # TODO seperate the gameloop with rendering the board
 def game_loop(screen, maparr, play_as):
     move_mem = []
+    game_notation = GameNotation()
     curr_turn = 0
 
     game_map_arr = maparr
@@ -151,6 +165,8 @@ def game_loop(screen, maparr, play_as):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     print(move_mem)
+                    # print game_notation
+                    game_notation.print_save()
                     sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -191,6 +207,7 @@ def game_loop(screen, maparr, play_as):
                                 # successful move, now change turn
                                 curr_turn = 1
                                 move_mem.append("WHITE: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy))
+                                game_notation.write_turn(selected_name, pos_to_location(play_as, (mouse_posx, mouse_posy)))
                             else:
                                 # recenter
                                 movekind, game_map_arr, is_path = selected[0].move(play_as, old_posx, old_posy, game_map_arr)
@@ -203,6 +220,7 @@ def game_loop(screen, maparr, play_as):
                                 # successful move, now change turn
                                 curr_turn = 0
                                 move_mem.append("BLACK: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy,))
+                                game_notation.write_turn(selected_name, pos_to_location(play_as, (mouse_posx, mouse_posy)))
                             else:
                                 # recenter
                                 oldPos = location_to_pos(play_as, selected[0].location)
@@ -227,6 +245,7 @@ def game_loop(screen, maparr, play_as):
                             if movekind > -1:
                                 curr_turn = 0
                                 move_mem.append("WHITE: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy,))
+                                game_notation.write_turn(selected_name, pos_to_location(play_as, (mouse_posx, mouse_posy)))
                                 # get new_location
                                 # add move_line
                             else:
@@ -242,6 +261,7 @@ def game_loop(screen, maparr, play_as):
                             if movekind > -1:
                                 curr_turn = 1
                                 move_mem.append("BLACK: NAME: {} FROM: [{},{}] TO: [{},{}]".format(selected_name, old_posx, old_posy, mouse_posx, mouse_posy,))
+                                game_notation.write_turn(selected_name, pos_to_location(play_as, (mouse_posx, mouse_posy)))
                                 # add move_line
                             else:
                                 # recenter
@@ -266,7 +286,7 @@ def game_loop(screen, maparr, play_as):
                 selected[0].rect.y = (math.floor(posy)) - 25
 
         draw_board(screen)
-
+        draw_show_turn(screen, curr_turn)
         if is_path:
             draw_path(screen, path, curr)
 
