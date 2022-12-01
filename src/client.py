@@ -1,38 +1,39 @@
-from twisted.internet import reactor
-from twisted.internet.protocol import Protocol, ReconnectingClientFactory
-from twisted.internet.endpoints import TCP4ClientEndpoint
+# Python program to implement client side of chat room.
+import socket
+import select
+import sys
+from uuid import uuid4
+ 
 
-class Client(Protocol):
-    def __init__(self): 
-        reactor.callInThread(self.send_data)
+print("ERR INSIDE CLIENT")
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+IP_address = "127.0.0.1"
+Port = 6000
+server.connect((IP_address, Port))
 
-    def connectionMade(self):
-        print("Whats your name?")
-        # name = input()
+while True:
+    # maintains a list of possible input streams
+    sockets_list = [sys.stdin, server]
+    
+    """ There are two possible input situations. Either the
+    user wants to give manual input to send to other people,
+    or the server is sending a message to be printed on the
+    screen. Select returns from sockets_list, the stream that
+    is reader for input. So for example, if the server wants
+    to send a message, then the if condition will hold true
+    below.If the user wants to send a message, the else
+    condition will evaluate as true"""
 
-    def dataReceived(self, data: bytes):
-        print(data.decode('utf-8'))
+    read_sockets, write_socket, error_socket = select.select(sockets_list,[],[])
 
-    def send_data(self):
-        while True:
-            data = input(":")
-            self.transport.write(data.encode('utf-8'))
-
-class ClientFactory(ReconnectingClientFactory):
-    def buildProtocol(self, addr):
-        return Client()
-
-    def clientConnectionFailed(self, connector, reason):
-        print("IN FAILED")
-        print(reason)
-        ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
-
-    def clientConnectionLost(self, connector, reason):
-        print("IN LOST")
-        print(reason)
-        ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
-
-if __name__ == '__main__':
-    endpoint = TCP4ClientEndpoint(reactor, 'localhost', 2000)
-    endpoint.connect(ClientFactory())
-    reactor.run()
+    for socks in read_sockets:
+        if socks == server:
+            message = socks.recv(2048)
+            print(message.decode('utf-8'))
+        else:
+            text_input = sys.stdin.readline()
+            server.send(text_input.encode('utf-8'))
+            # sys.stdout.write("<You>")
+            # sys.stdout.write(text_input)
+            # sys.stdout.flush()
+server.close()

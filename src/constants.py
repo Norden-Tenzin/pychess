@@ -18,7 +18,9 @@ CURRTURN = pygame.font.SysFont('arialblack', 12)
 
 # Sizes
 UISPACE = 400
-SIZE = 400 # screen size
+SIZE = 400 
+# screen size
+SCREEN_SIZE = (SIZE, SIZE+20)
 CELLSIZE = int(SIZE/8)
 INDEXSIZE = int(SIZE/50)
 
@@ -39,6 +41,8 @@ W_KNIGHT = "../assets/w_knight.png"
 W_PAWN = "../assets/w_pawn.png"
 W_QUEEN = "../assets/w_queen.png"
 W_ROOK = "../assets/w_rook.png"
+
+TICK = "../assets/tick.png"
 
 # Lists 
 ALPHA = ["a", "b", "c", "d", "e", "f", "g", "h"]

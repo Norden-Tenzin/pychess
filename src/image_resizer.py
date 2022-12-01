@@ -25,3 +25,20 @@ def cut_and_resize_image(image_path = "./assets/pieces.png"):
                 cropped_image = image.crop((w_pointer + (i * w_diff), h_diff, w_diff * (i+1), h_diff*2))
                 resized = cropped_image.resize(resized_size)
                 resized.save("./assets/"+c+"_"+t+".png")
+
+
+def resize_image(image_path):
+    image = Image.open(image_path)
+    width = image.width
+    height = image.height 
+    w_pointer = 0 
+    h_pointer = 0 
+    w_diff = (width/6)
+    h_diff = (height/2)
+
+    resized_size = (25, 25)
+    resized = image.resize(resized_size)
+    resized.save("./assets/tick.png")
+
+if __name__ == "__main__":
+    resize_image("./assets/tick_original.png")

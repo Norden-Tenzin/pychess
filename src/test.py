@@ -76,3 +76,12 @@ print(type(test()))
     'nw': {'open': [[6, 3], [5, 2], [4, 1], [3, 0]], 'hit': []}, 
     'se': {'open': [], 'hit': []}, 'sw': {'open': [], 'hit': []}
 }
+
+uid = None
+
+if uid:
+    print("HELLOOOO")
+
+x = [{"user": "<uid1>", "color": 0}, {"user": "<uid2>", "color": 1}]
+# [n * 2 for n in numbers if n % 2 == 1]
+print([{"user": i["user"]} for i in x])
