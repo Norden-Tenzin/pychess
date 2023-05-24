@@ -25,7 +25,7 @@ CELLSIZE = int(SIZE/8)
 INDEXSIZE = int(SIZE/50)
 
 # File add
-GAMEFILE = "game.txt"
+GAMEFILE = "./data/game.txt"
 
 # Image add
 B_BISHOP = "../assets/b_bishop.png"

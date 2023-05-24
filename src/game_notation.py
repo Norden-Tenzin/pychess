@@ -21,10 +21,10 @@ class GameNotation():
     curr_line = []
     
     def __init__(self):
-        open("save.txt", "w").close
+        open("./data/save.txt", "w").close
 
     def write_line(self):
-        f = open("save.txt", "a")
+        f = open("./data/save.txt", "a")
         print(self.curr_line)
         f.write("{}. {} {} ".format(self.move_counter, self.curr_line[0], self.curr_line[1]))
         self.move_counter += 1
@@ -53,11 +53,11 @@ class GameNotation():
 
     def print_save(self):
         if self.curr_line:
-            f = open("save.txt", "a")
+            f = open("./data/save.txt", "a")
             f.write("{}. {} ".format(self.move_counter, self.curr_line[0]))
             self.move_counter += 1
             self.curr_line = []
-        f = open("save.txt", "r")
+        f = open("./data/save.txt", "r")
         print(f.read())
         f.close()
 

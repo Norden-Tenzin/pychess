@@ -1,71 +1,30 @@
 #!/usr/bin/python3.4
 # Setup Python ----------------------------------------------- #
-import pygame, sys
-from helper_functions import *
-from pygame.locals import *
-from constants import *
 from main import main
 from uuid import uuid4
+from time import sleep
+from subprocess import Popen, PIPE
 import json
+import os
+import sys
 
 # server
-from _thread import *
-from server import server
-import socket
-import select
-import sys
-# from main import *
+from network.server import ChessServer
+
+# cliet
+from network.client import Client
+
+# helper
+from ui_helper import *
 
 # Setup pygame/window ---------------------------------------- #
 
 pygame.init()
 pygame.display.set_caption('game base')
 screen = pygame.display.set_mode(SCREEN_SIZE)
-mainClock = pygame.time.Clock()
-
-font_name = "segoeulblack"
-title = pygame.font.SysFont(font_name, 80, 1)
-text = pygame.font.SysFont(font_name, 40, 1)
-base_font = pygame.font.Font(None, 32)
-back = pygame.font.SysFont(font_name, 15, 1)
-tick_image = pygame.image.load(TICK)
-fonts = pygame.font.get_fonts()
-
 click = False
 
-# global
-uid = ""
-
-def draw_text(text, font, color, surface, x, y):
-    textobj = font.render(text, 1, color)
-    textrect = textobj.get_rect()
-    textrect.topleft = (x, y)
-    surface.blit(textobj, textrect)
-
-def draw_button(text, font, color, surface, fontxoffset, fontyoffset, buttonx, buttony, buttonw, buttonh, buttoncolor, buttonfunc, mx, my, click):
-    button_rect = pygame.Rect(buttonx, buttony, buttonw, buttonh)
-    if button_rect.collidepoint((mx, my)):
-        if click:
-            buttonfunc()
-    pygame.draw.rect(screen, buttoncolor, button_rect)
-    draw_text(text, font, color, surface, buttonx + fontxoffset, buttony + fontyoffset)
-
-def draw_button_main(text, font, color, surface, fontxoffset, fontyoffset, buttonx, buttony, buttonw, buttonh, buttoncolor, buttonfunc, mx, my, click, play_as = 0):
-    button_rect = pygame.Rect(buttonx, buttony, buttonw, buttonh)
-    if button_rect.collidepoint((mx, my)):
-        if click:
-            buttonfunc(play_as)
-    pygame.draw.rect(screen, buttoncolor, button_rect)
-    draw_text(text, font, color, surface, buttonx + fontxoffset, buttony + fontyoffset)
-
 def main_menu():
-    print("INMAIN")
-    global uid
-    # set uuid 
-    if uid == "":
-        uid = str(uuid4())
-
-    i = 0
     click = False
     while True:
         screen.fill(DARK)
@@ -73,13 +32,13 @@ def main_menu():
         draw_text('Chess', title, WHITE, screen, 25, 35)
         
         # offline   
-        draw_button('Offline', text, WHITE, screen, 10, 10, 25, 100, SIZE-50, 50, DARKER, offline, mx, my, click)
+        draw_button(screen, 'Offline', text, WHITE, screen, 10, 10, 25, 100, SIZE-50, 50, DARKER, offline, mx, my, click)
         # host game
-        draw_button('Host Game', text, WHITE, screen, 10, 10, 25, 160, SIZE-50, 50, DARKER, host, mx, my, click)
+        draw_button(screen, 'Host Game', text, WHITE, screen, 10, 10, 25, 160, SIZE-50, 50, DARKER, host, mx, my, click)
         # join game
-        draw_button('Join Game', text, WHITE, screen, 10, 10, 25, 220, SIZE-50, 50, DARKER, join, mx, my, click)
+        draw_button(screen, 'Join Game', text, WHITE, screen, 10, 10, 25, 220, SIZE-50, 50, DARKER, join, mx, my, click)
         # options
-        draw_button('Options', text, WHITE, screen, 10, 10, 25, 280, SIZE-50, 50, DARKER, options, mx, my, click)
+        draw_button(screen, 'Options', text, WHITE, screen, 10, 10, 25, 280, SIZE-50, 50, DARKER, options, mx, my, click)
         click = False   
         
         for event in pygame.event.get():
@@ -139,9 +98,9 @@ def offline():
         pygame.display.update()
         mainClock.tick(60)
 
-def lobby(server):
+def lobby():
     print("INLOBBY")
-    player_data = {"uid": uid, "color": 0}
+    # player_data = {"uid": uid, "color": 0}
     # sample message
     # {"status": "lobby", "data": [
     #     {"user": "<>", "color": 0},
@@ -174,20 +133,20 @@ def lobby(server):
         for i, player in enumerate(lst_player):
             draw_lobby_player(player, font, color, surface, list_x, list_y + (list_h + 5)*i, list_w, list_h, list_color, mx, my, click)
 
-    def refresh(server):
-        print("HERE1")
-        # send my settings
-        data = {"code": 110, "player": player_data}
-        message_to_send = json.dumps(data).encode('utf-8')
-        server.send(message_to_send)
+    # def refresh():
+    #     print("HERE1")
+    #     # send my settings
+    #     data = {"code": 110, "player": player_data}
+    #     message_to_send = json.dumps(data).encode('utf-8')
+    #     server.send(message_to_send)
 
-        print("HERE2")
+    #     print("HERE2")
 
-        data = server.recv(2048)
-        message = json.dumps(data).encode('utf-8')
-        print(message)
+    #     data = server.recv(2048)
+    #     message = json.dumps(data).encode('utf-8')
+    #     print(message)
         
-    refresh(server)
+    # refresh(server)
 
     # data = {"code": 110, "player": player_data}
     # message = json.dumps(data).encode('utf-8')
@@ -226,34 +185,48 @@ def lobby(server):
         mainClock.tick(60)
 
 # TODO remove hardcoded values
-def connect_to_server():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    IP_address = "127.0.0.1"
-    Port = 6000
-    server.connect((IP_address, Port))
-    data = {"code": 100, "uid": uid}
-    message = json.dumps(data)
-    server.send(message.encode('utf-8'))
-    return server
+# def connect_to_server():
+#     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     IP_address = "127.0.0.1"
+#     Port = 6000
+#     server.connect((IP_address, Port))
+#     data = {"code": 100, "uid": uid}
+#     message = json.dumps(data)
+#     server.send(message.encode('utf-8'))
+#     return server
 
 def host():
-    # start server
-    start_new_thread(server,())  
-    # threading.Thread(target=server).start()
-    # join server
-    server_var = connect_to_server()
-    lobby(server_var)
-    # call lobby
-    pass
+    cmd = os.path.join(os.getcwd(), "./network/server.py")
+    Popen('{} {}'.format('python', cmd), shell=True, stdout=PIPE)
+    sleep(1)
+
+    host, port = "127.0.0.1", "8088"
+    c = Client(host, int(port), screen)
+    while 1:
+        c.Loop()
+        sleep(0.001)
+    # # start server
+    # start_new_thread(server,())  
+    # # threading.Thread(target=server).start()
+    # # join server
+    # server_var = connect_to_server()
+    # lobby(server_var)
+    # # call lobby
+    # pass
 
 def join():
+    host, port = "127.0.0.1", "8088"
+    c = Client(host, int(port), screen)
+    while 1:
+        c.Loop()
+        sleep(0.001)
     # join server
-    server_var = connect_to_server()
-    lobby(server_var)
+    # server_var = connect_to_server()
+    # lobby(server_var)
     # call lobby
-    pass 
+    # pass 
 
-    # TODO server selection screen
+    # # TODO server selection screen
 
     # active = False
     # input_rect = pygame.Rect(200, 200, 140, 32)
